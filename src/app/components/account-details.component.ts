@@ -3,16 +3,19 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { DataService } from '../services/data.service';
 import { AddressPipe } from '../pipes/address.pipe';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-account-details',
   standalone: true,
-  imports: [CommonModule, AddressPipe],
+  imports: [CommonModule, AddressPipe, RouterLink],
   template: `
     <div class="account-container" *ngIf="account">
       <header class="account-header">
         <h2>Account Details</h2>
-        <div class="address-display">{{ address | address }}</div>
+        <div class="address-display" [title]="address">
+          {{ address | address }}
+        </div>
       </header>
 
       @if (account.profile) {
@@ -42,7 +45,12 @@ import { AddressPipe } from '../pipes/address.pipe';
               <h4>{{ tag[0] }}</h4>
               <div class="tag-values">
                 @for (value of tag[1]; track value) {
-                  <span class="tag-value">{{ value | address }}</span>
+                  <a class="tag-value" [routerLink]="['/accounts', value]" [title]="value">
+                    {{ value | address }}
+                    @if (getNameForAddress(value)) {
+                      <span class="tag-name">[{{ getNameForAddress(value) }}]</span>
+                    }
+                  </a>
                 }
               </div>
             </div>
@@ -70,6 +78,11 @@ import { AddressPipe } from '../pipes/address.pipe';
       padding: 4px 8px;
       background: #f5f5f5;
       border-radius: 4px;
+      cursor: help;
+      transition: all 0.3s ease;
+    }
+    .address-display:hover {
+      background: #e0e0e0;
     }
     .profile-section {
       margin-bottom: 30px;
@@ -113,6 +126,19 @@ import { AddressPipe } from '../pipes/address.pipe';
       padding: 4px 8px;
       border-radius: 4px;
       font-size: 0.9em;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      display: inline-flex;
+      align-items: center;
+    }
+    .tag-value:hover {
+      background: #007bff33;
+    }
+    .tag-name {
+      margin-left: 4px;
+      color: #666;
+      font-size: 0.9em;
     }
   `]
 })
@@ -122,14 +148,20 @@ export class AccountDetailsComponent implements OnInit {
 
   address = '';
   account: any = null;
+  private accounts: Record<string, any> = {};
 
   async ngOnInit() {
     this.address = this.route.snapshot.paramMap.get('address') || '';
     const data = await this.dataService.getData();
     this.account = data?.accounts?.[this.address];
+    this.accounts = data?.accounts || {};
   }
 
   objectEntries(obj: any): [string, any][] {
     return Object.entries(obj);
+  }
+
+  getNameForAddress(address: string): string | null {
+    return this.accounts[address]?.profile?.Name?.[0] || null;
   }
 }

@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { DataService } from '../services/data.service';
 import { AddressPipe } from '../pipes/address.pipe';
 import { map } from 'rxjs';
+import { RouterLink } from '@angular/router';
 
 // Add this interface if it doesn't exist
 interface BSNData {
@@ -14,7 +15,7 @@ interface BSNData {
 @Component({
   selector: 'app-accounts-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, AddressPipe],
+  imports: [CommonModule, FormsModule, AddressPipe, RouterLink],
   template: `
     <div class="accounts-container">
       <div class="filters">
@@ -30,12 +31,14 @@ interface BSNData {
       <div class="accounts-grid">
         @for (account of filteredAccounts; track account[0]) {
         <div class="account-card">
-          @if (account[1].profile?.Name) {
-          <h3>{{ account[1].profile.Name[0] }}</h3>
-          }
-          <h4 class="address-display" [title]="account[0]">
-            {{ account[0] | address }}
-          </h4>
+          <div class="account-header" [routerLink]="['/accounts', account[0]]">
+            @if (account[1].profile?.Name) {
+              <h3>{{ account[1].profile.Name[0] }}</h3>
+            }
+            <h4 class="address-display" [title]="account[0]">
+              {{ account[0] | address }}
+            </h4>
+          </div>
           
           @if (account[1].profile?.About) {
             <p class="about">{{ account[1].profile.About[0] }}</p>
@@ -143,6 +146,23 @@ interface BSNData {
         margin-left: 4px;
         color: #666;
         font-size: 0.9em;
+      }
+      .account-header {
+        cursor: pointer;
+        transition: opacity 0.2s;
+        padding: 4px;
+        margin: -4px;
+        border-radius: 4px;
+      }
+      .account-header:hover {
+        opacity: 0.8;
+        background: rgba(0,0,0,0.05);
+      }
+      .account-header h3 {
+        margin: 0 0 8px 0;
+      }
+      .address-display {
+        margin: 0;
       }
     `,
   ],
