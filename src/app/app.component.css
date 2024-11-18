@@ -25,9 +25,6 @@
 }
 
 .install-button {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
   padding: 12px 24px;
   background-color: #007bff;
   color: white;
@@ -36,7 +33,6 @@
   font-size: 1.1rem;
   cursor: pointer;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  z-index: 1000;
   transition: transform 0.2s;
 }
 
@@ -56,6 +52,7 @@ header {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 30px;
+  padding: 1rem;
 }
 
 main {
