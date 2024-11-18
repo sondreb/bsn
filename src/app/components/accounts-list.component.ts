@@ -29,7 +29,8 @@ interface BSNData {
       @if (dataService.loading$ | async) {
       <app-loading-spinner />
       } @else {
-      <div class="filters">
+
+      <!--  <div class="filters">
         <h3>Filter by Tag</h3>
         <select [(ngModel)]="selectedTag" (change)="filterByTag()">
           <option value="">All Accounts</option>
@@ -37,7 +38,7 @@ interface BSNData {
           <option [value]="tag">{{ tag }}</option>
           }
         </select>
-      </div>
+      </div>-->
 
       <div class="accounts-grid">
         @for (account of filteredAccounts(); track account[0]) {

@@ -29,25 +29,27 @@ import { DataService } from './services/data.service';
     </div>
   `,
   styles: [`
-    /* ...existing styles... */
     header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 20px;
       padding: 1rem;
-      background: #fff;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
 
     header h1 {
       margin: 0;
       font-size: 1.8rem;
+      color: #333;
     }
 
     .install-button {
-      margin-left: auto; /* Ensures button stays right */
+      margin-left: auto;
       padding: 8px 16px;
-      background-color: #007bff;
+      background-color: #764ba2;
       color: white;
       border: none;
       border-radius: 4px;
@@ -57,28 +59,34 @@ import { DataService } from './services/data.service';
     }
 
     .install-button:hover {
-      background-color: #0056b3;
+      background-color: #667eea;
     }
 
     .tabs {
       display: flex;
       gap: 1px;
-      background: #ddd;
+      background: rgba(255, 255, 255, 0.2);
       padding: 1px;
       margin-bottom: 20px;
+      border-radius: 8px;
+      overflow: hidden;
     }
     .tabs a {
       padding: 12px 24px;
-      background: #f5f5f5;
+      background: rgba(255, 255, 255, 0.9);
       text-decoration: none;
       color: #666;
       flex: 1;
       text-align: center;
+      transition: all 0.3s ease;
     }
     .tabs a.active {
       background: #fff;
-      color: #000;
+      color: #764ba2;
       font-weight: bold;
+    }
+    .tabs a:hover:not(.active) {
+      background: rgba(255, 255, 255, 1);
     }
   `]
 })
