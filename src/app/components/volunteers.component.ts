@@ -2,6 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataService } from '../services/data.service';
 import { AddressPipe } from '../pipes/address.pipe';
+import { RouterLink } from '@angular/router';
 
 interface VolunteerProgram {
   address: string;
@@ -17,7 +18,7 @@ interface VolunteerProgram {
 @Component({
   selector: 'app-volunteers',
   standalone: true,
-  imports: [CommonModule, AddressPipe],
+  imports: [CommonModule, AddressPipe, RouterLink],
   template: `
     <div class="volunteers-container">
       <h2>Volunteer Programs</h2>
@@ -39,10 +40,12 @@ interface VolunteerProgram {
               <div class="volunteers-detail">
                 @for (volunteer of program.volunteers; track volunteer.address) {
                   <div class="volunteer-entry">
-                    <span class="address">{{ volunteer.address | address }}</span>
-                    @if (volunteer.name) {
-                      <span class="name">[{{ volunteer.name }}]</span>
-                    }
+                    <a [routerLink]="['/accounts', volunteer.address]" class="volunteer-link">
+                      <span class="address">{{ volunteer.address | address }}</span>
+                      @if (volunteer.name) {
+                        <span class="name">[{{ volunteer.name }}]</span>
+                      }
+                    </a>
                   </div>
                 }
               </div>
@@ -106,6 +109,18 @@ interface VolunteerProgram {
     }
     .volunteer-entry:hover {
       background: #f8f8f8;
+    }
+    .volunteer-link {
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      padding: 6px 10px;
+    }
+    .volunteer-link:hover {
+      background: #f0f0f0;
+      border-radius: 4px;
     }
   `]
 })
