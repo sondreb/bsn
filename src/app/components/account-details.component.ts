@@ -44,30 +44,58 @@ import { RatingService } from '../services/rating.service';
         </div>
         }
       </section>
-      } @if (account.tags) {
-      <section class="tags-section">
-        <h3>Tags</h3>
-        @for (tag of objectEntries(account.tags); track tag[0]) {
-        <div class="tag-group">
-          <h4>{{ tag[0] }}</h4>
-          <div class="tag-values">
-            @for (value of tag[1]; track value) {
-            <a
-              class="tag-value"
-              [routerLink]="['/accounts', value]"
-              [title]="value"
-            >
-              {{ value | address }}
-              @if (getNameForAddress(value)) {
-              <span class="tag-name">[{{ getNameForAddress(value) }}]</span>
-              }
-            </a>
-            }
-          </div>
-        </div>
-        }
-      </section>
       }
+
+      <div class="tags-container">
+        @if (account.tags) {
+        <section class="tags-section">
+          <h3>Given Tags</h3>
+          @for (tagGroup of getGivenTagGroups(); track tagGroup.type) {
+          <div class="tag-group">
+            <h4>{{ tagGroup.type }}</h4>
+            <div class="tag-values">
+              @for (value of tagGroup.values; track value) {
+              <a
+                class="tag-value"
+                [routerLink]="['/accounts', value]"
+                [title]="value"
+              >
+                {{ value | address }}
+                @if (getNameForAddress(value)) {
+                <span class="tag-name">[{{ getNameForAddress(value) }}]</span>
+                }
+              </a>
+              }
+            </div>
+          </div>
+          }
+        </section>
+        } @if (getReceivedTagGroups().length > 0) {
+        <section class="tags-section">
+          <h3>Received Tags</h3>
+          @for (tagGroup of getReceivedTagGroups(); track tagGroup.type) {
+          <div class="tag-group">
+            <h4>{{ tagGroup.type }}</h4>
+            <div class="tag-values">
+              @for (tag of tagGroup.tags; track tag.fromAddress) {
+              <span class="tag-value">
+                <span class="from-address">from</span>
+                <a [routerLink]="['/accounts', tag.fromAddress]">
+                  {{ tag.fromAddress | address }}
+                  @if (getNameForAddress(tag.fromAddress)) {
+                  <span class="tag-name"
+                    >[{{ getNameForAddress(tag.fromAddress) }}]</span
+                  >
+                  }
+                </a>
+              </span>
+              }
+            </div>
+          </div>
+          }
+        </section>
+        }
+      </div>
     </div>
   `,
   styles: [
@@ -171,6 +199,15 @@ import { RatingService } from '../services/rating.service';
         background: #f4433622;
         color: #f44336;
       }
+      .tags-container {
+        display: grid;
+        gap: 20px;
+      }
+      .from-address {
+        color: #666;
+        font-size: 0.9em;
+        margin-right: 4px;
+      }
     `,
   ],
 })
@@ -200,5 +237,39 @@ export class AccountDetailsComponent implements OnInit {
 
   getRating(): number {
     return this.ratingService.calculateRating(this.account);
+  }
+
+  getGivenTagGroups() {
+    if (!this.account?.tags) return [];
+    return Object.entries(this.account.tags)
+      .map(([type, values]) => ({
+        type,
+        values: values as string[],
+      }))
+      .sort((a, b) => a.type.localeCompare(b.type));
+  }
+
+  getReceivedTagGroups() {
+    const tagGroups = new Map<string, Array<{ fromAddress: string }>>();
+
+    // Iterate through all accounts
+    for (const [fromAddress, accountData] of Object.entries(this.accounts)) {
+      if (fromAddress === this.address || !accountData.tags) continue;
+
+      // Check each tag type in the account
+      for (const [tagType, values] of Object.entries(accountData.tags)) {
+        if (Array.isArray(values) && values.includes(this.address)) {
+          if (!tagGroups.has(tagType)) {
+            tagGroups.set(tagType, []);
+          }
+          tagGroups.get(tagType)?.push({ fromAddress });
+        }
+      }
+    }
+
+    // Convert to sorted array
+    return Array.from(tagGroups.entries())
+      .map(([type, tags]) => ({ type, tags }))
+      .sort((a, b) => a.type.localeCompare(b.type));
   }
 }
