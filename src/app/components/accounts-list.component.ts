@@ -108,7 +108,10 @@ export class AccountsListComponent {
   selectedTag = '';
   filteredAccounts$ = this.dataService
     .getData()
-    .pipe(map((data: BSNData | null) => (data ? Object.entries(data['accounts']) : [])));
+    .pipe(
+      map((data: BSNData | null) => (data ? Object.entries(data['accounts']) : [])),
+      map(accounts => this.sortAccounts(accounts))
+    );
 
   constructor() {}
 
@@ -120,7 +123,35 @@ export class AccountsListComponent {
     } else {
       this.filteredAccounts$ = this.dataService
         .getData()
-        .pipe(map((data: BSNData | null) => (data ? Object.entries(data['accounts']) : [])));
+        .pipe(
+          map((data: BSNData | null) => (data ? Object.entries(data['accounts']) : [])),
+          map(accounts => this.sortAccounts(accounts))
+        );
     }
+  }
+
+  private getTagCount(account: any): number {
+    return Object.keys(account.tags || {}).length;
+  }
+
+  private sortAccounts(accounts: [string, any][]): [string, any][] {
+    return accounts.sort((a, b) => {
+      // Primary sort: number of tags (descending)
+      const tagsA = this.getTagCount(a[1]);
+      const tagsB = this.getTagCount(b[1]);
+      if (tagsA !== tagsB) return tagsB - tagsA;
+
+      // Secondary sort: by name
+      const nameA = (a[1].name || '').toLowerCase();
+      const nameB = (b[1].name || '').toLowerCase();
+      if (nameA !== nameB) {
+        if (!nameA) return 1;
+        if (!nameB) return -1;
+        return nameA.localeCompare(nameB);
+      }
+
+      // Tertiary sort: by address
+      return a[0].localeCompare(b[0]);
+    });
   }
 }
