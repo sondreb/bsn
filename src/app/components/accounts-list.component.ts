@@ -2,12 +2,19 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DataService } from '../services/data.service';
+import { AddressPipe } from '../pipes/address.pipe';
 import { map } from 'rxjs';
+
+// Add this interface if it doesn't exist
+interface BSNData {
+  accounts: Record<string, any>;
+  [key: string]: any;
+}
 
 @Component({
   selector: 'app-accounts-list',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, AddressPipe],
   template: `
     <div class="accounts-container">
       <div class="filters">
@@ -15,27 +22,35 @@ import { map } from 'rxjs';
         <select [(ngModel)]="selectedTag" (change)="filterByTag()">
           <option value="">All Accounts</option>
           @for (tag of uniqueTags$ | async; track tag) {
-          <option [value]="tag">{{ tag }}</option>
+            <option [value]="tag">{{ tag }}</option>
           }
         </select>
       </div>
 
       <div class="accounts-grid">
         @for (account of filteredAccounts$ | async; track account[0]) {
-        <div class="account-card">
-          <h4>{{ account[0] }}</h4>
-          @if (account[1].profile?.Name) {
-          <p>Name: {{ account[1].profile?.Name?.[0] }}</p>
-          } @if (account[1].tags) {
-          <div class="tags">
-            @for (tagEntry of account[1].tags | keyvalue; track tagEntry.key) {
-            <div class="tag">
-              {{ tagEntry.key }}: {{ tagEntry.value.join(', ') }}
-            </div>
+          <div class="account-card">
+            <h4 class="address-display" [title]="account[0]">
+              {{ account[0] | address }}
+            </h4>
+            @if (account[1].profile?.Name) {
+              <p>Name: {{ account[1].profile.Name[0] }}</p>
+            }
+            @if (account[1].tags) {
+              <div class="tags">
+                @for (tagEntry of account[1].tags | keyvalue; track tagEntry.key) {
+                  <div class="tag">
+                    <span>{{ tagEntry.key }}:</span>
+                    <div class="tag-values">
+                      @for (value of (tagEntry.value || []); track value) {
+                        <span class="tag-value" [title]="value">{{ value | address }}</span>
+                      }
+                    </div>
+                  </div>
+                }
+              </div>
             }
           </div>
-          }
-        </div>
         }
       </div>
     </div>
@@ -68,6 +83,21 @@ import { map } from 'rxjs';
         border-radius: 4px;
         display: inline-block;
       }
+      .address-display {
+        cursor: help;
+      }
+      .tag-values {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+      }
+      .tag-value {
+        background: #007bff22;
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-size: 0.9em;
+        cursor: help;
+      }
     `,
   ],
 })
@@ -78,7 +108,7 @@ export class AccountsListComponent {
   selectedTag = '';
   filteredAccounts$ = this.dataService
     .getData()
-    .pipe(map((data) => (data ? Object.entries(data.accounts) : [])));
+    .pipe(map((data: BSNData | null) => (data ? Object.entries(data['accounts']) : [])));
 
   constructor() {}
 
@@ -90,7 +120,7 @@ export class AccountsListComponent {
     } else {
       this.filteredAccounts$ = this.dataService
         .getData()
-        .pipe(map((data) => (data ? Object.entries(data.accounts) : [])));
+        .pipe(map((data: BSNData | null) => (data ? Object.entries(data['accounts']) : [])));
     }
   }
 }

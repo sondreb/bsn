@@ -25,7 +25,7 @@ export interface Account {
 })
 export class DataService {
   private bsnData = new BehaviorSubject<BSNData | null>(null);
-  private uniqueTags = new BehaviorSubject<Set<string>>(new Set());
+  private uniqueTags = new BehaviorSubject<string[]>([]);
 
   constructor(private http: HttpClient) {
     this.fetchData();
@@ -39,20 +39,20 @@ export class DataService {
   }
 
   private updateUniqueTags(data: BSNData) {
-    const tags = new Set<string>();
+    const tagsSet = new Set<string>();
     Object.values(data.accounts).forEach(account => {
       if (account.tags) {
-        Object.keys(account.tags).forEach(tag => tags.add(tag));
+        Object.keys(account.tags).forEach(tag => tagsSet.add(tag));
       }
     });
-    this.uniqueTags.next(tags);
+    this.uniqueTags.next(Array.from(tagsSet).sort());
   }
 
   getData(): Observable<BSNData | null> {
     return this.bsnData.asObservable();
   }
 
-  getUniqueTags(): Observable<Set<string>> {
+  getUniqueTags(): Observable<string[]> {
     return this.uniqueTags.asObservable();
   }
 
