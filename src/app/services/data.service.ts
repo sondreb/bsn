@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
 
 export interface BSNData {
   accounts: Record<string, any>;
@@ -10,6 +11,8 @@ export interface BSNData {
   providedIn: 'root'
 })
 export class DataService {
+  private loading = new BehaviorSubject<boolean>(false);
+  loading$ = this.loading.asObservable();
   private cachedData: BSNData | null = null;
   private readonly dataUrl = 'https://bsn.mtla.me/json';
 
@@ -18,6 +21,7 @@ export class DataService {
       return this.cachedData;
     }
 
+    this.loading.next(true);
     try {
       const response = await fetch(this.dataUrl);
       if (!response.ok) {
@@ -28,6 +32,8 @@ export class DataService {
     } catch (error) {
       console.error('Error fetching data:', error);
       return null;
+    } finally {
+      this.loading.next(false);
     }
   }
 

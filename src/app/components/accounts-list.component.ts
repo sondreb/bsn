@@ -6,6 +6,7 @@ import { AddressPipe } from '../pipes/address.pipe';
 import { map } from 'rxjs';
 import { RouterLink } from '@angular/router';
 import { RatingService } from '../services/rating.service';
+import { LoadingSpinnerComponent } from '../shared/loading-spinner.component';
 
 // Add this interface if it doesn't exist
 interface BSNData {
@@ -16,74 +17,78 @@ interface BSNData {
 @Component({
   selector: 'app-accounts-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, AddressPipe, RouterLink],
+  imports: [CommonModule, FormsModule, AddressPipe, RouterLink, LoadingSpinnerComponent],
   template: `
     <div class="accounts-container">
-      <div class="filters">
-        <h3>Filter by Tag</h3>
-        <select [(ngModel)]="selectedTag" (change)="filterByTag()">
-          <option value="">All Accounts</option>
-          @for (tag of uniqueTags; track tag) {
-          <option [value]="tag">{{ tag }}</option>
-          }
-        </select>
-      </div>
-
-      <div class="accounts-grid">
-        @for (account of filteredAccounts; track account[0]) {
-        <div class="account-card">
-          <div class="account-header" [routerLink]="['/accounts', account[0]]">
-            @if (account[1].profile?.Name) {
-            <h3>{{ account[1].profile.Name[0] }}</h3>
+      @if (dataService.loading$ | async) {
+        <app-loading-spinner />
+      } @else {
+        <div class="filters">
+          <h3>Filter by Tag</h3>
+          <select [(ngModel)]="selectedTag" (change)="filterByTag()">
+            <option value="">All Accounts</option>
+            @for (tag of uniqueTags; track tag) {
+            <option [value]="tag">{{ tag }}</option>
             }
-            <h4 class="address-display" [title]="account[0]">
-              {{ account[0] | address }}
-              <span
-                class="rating"
-                [class.high]="getRating(account[1]) > 70"
-                [class.medium]="
-                  getRating(account[1]) > 30 && getRating(account[1]) <= 70
-                "
-                [class.low]="getRating(account[1]) <= 30"
-              >
-                ({{ getRating(account[1]) }})
-              </span>
-            </h4>
-          </div>
+          </select>
+        </div>
 
-          @if (account[1].profile?.About) {
-          <p class="about">{{ account[1].profile.About[0] }}</p>
-          } @if (account[1].profile?.Website) {
-          <div class="websites">
-            @for (website of account[1].profile.Website; track website) {
-            <a [href]="website" target="_blank" rel="noopener">{{ website }}</a>
-            }
-          </div>
-          } @if (account[1].tags) {
-          <div class="tags">
-            @for (tagEntry of account[1].tags | keyvalue; track tagEntry.key) {
-            <div class="tag">
-              <span>{{ tagEntry.key }}:</span>
-              <div class="tag-values">
-                @for (value of (tagEntry.value || []); track value) {
-                <a
-                  class="tag-value"
-                  [routerLink]="['/accounts', value]"
-                  [title]="value"
-                  >{{ value | address }}
-                  @if (getNameForAddress(value)) {
-                  <span class="tag-name">[{{ getNameForAddress(value) }}]</span>
+        <div class="accounts-grid">
+          @for (account of filteredAccounts; track account[0]) {
+          <div class="account-card">
+            <div class="account-header" [routerLink]="['/accounts', account[0]]">
+              @if (account[1].profile?.Name) {
+              <h3>{{ account[1].profile.Name[0] }}</h3>
+              }
+              <h4 class="address-display" [title]="account[0]">
+                {{ account[0] | address }}
+                <span
+                  class="rating"
+                  [class.high]="getRating(account[1]) > 70"
+                  [class.medium]="
+                    getRating(account[1]) > 30 && getRating(account[1]) <= 70
+                  "
+                  [class.low]="getRating(account[1]) <= 30"
+                >
+                  ({{ getRating(account[1]) }})
+                </span>
+              </h4>
+            </div>
+
+            @if (account[1].profile?.About) {
+            <p class="about">{{ account[1].profile.About[0] }}</p>
+            } @if (account[1].profile?.Website) {
+            <div class="websites">
+              @for (website of account[1].profile.Website; track website) {
+              <a [href]="website" target="_blank" rel="noopener">{{ website }}</a>
+              }
+            </div>
+            } @if (account[1].tags) {
+            <div class="tags">
+              @for (tagEntry of account[1].tags | keyvalue; track tagEntry.key) {
+              <div class="tag">
+                <span>{{ tagEntry.key }}:</span>
+                <div class="tag-values">
+                  @for (value of (tagEntry.value || []); track value) {
+                  <a
+                    class="tag-value"
+                    [routerLink]="['/accounts', value]"
+                    [title]="value"
+                    >{{ value | address }}
+                    @if (getNameForAddress(value)) {
+                    <span class="tag-name">[{{ getNameForAddress(value) }}]</span>
+                    }
+                  </a>
                   }
-                </a>
-                }
+                </div>
               </div>
+              }
             </div>
             }
           </div>
           }
         </div>
-        }
-      </div>
+      }
     </div>
   `,
   styles: [
