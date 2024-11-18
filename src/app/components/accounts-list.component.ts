@@ -5,6 +5,7 @@ import { DataService } from '../services/data.service';
 import { AddressPipe } from '../pipes/address.pipe';
 import { map } from 'rxjs';
 import { RouterLink } from '@angular/router';
+import { RatingService } from '../services/rating.service';
 
 // Add this interface if it doesn't exist
 interface BSNData {
@@ -33,39 +34,47 @@ interface BSNData {
         <div class="account-card">
           <div class="account-header" [routerLink]="['/accounts', account[0]]">
             @if (account[1].profile?.Name) {
-              <h3>{{ account[1].profile.Name[0] }}</h3>
+            <h3>{{ account[1].profile.Name[0] }}</h3>
             }
             <h4 class="address-display" [title]="account[0]">
               {{ account[0] | address }}
+              <span
+                class="rating"
+                [class.high]="getRating(account[1]) > 70"
+                [class.medium]="
+                  getRating(account[1]) > 30 && getRating(account[1]) <= 70
+                "
+                [class.low]="getRating(account[1]) <= 30"
+              >
+                ({{ getRating(account[1]) }})
+              </span>
             </h4>
           </div>
-          
-          @if (account[1].profile?.About) {
-            <p class="about">{{ account[1].profile.About[0] }}</p>
-          }
-          
-          @if (account[1].profile?.Website) {
-            <div class="websites">
-              @for (website of account[1].profile.Website; track website) {
-                <a [href]="website" target="_blank" rel="noopener">{{ website }}</a>
-              }
-            </div>
-          }
 
-          @if (account[1].tags) {
+          @if (account[1].profile?.About) {
+          <p class="about">{{ account[1].profile.About[0] }}</p>
+          } @if (account[1].profile?.Website) {
+          <div class="websites">
+            @for (website of account[1].profile.Website; track website) {
+            <a [href]="website" target="_blank" rel="noopener">{{ website }}</a>
+            }
+          </div>
+          } @if (account[1].tags) {
           <div class="tags">
             @for (tagEntry of account[1].tags | keyvalue; track tagEntry.key) {
             <div class="tag">
               <span>{{ tagEntry.key }}:</span>
               <div class="tag-values">
                 @for (value of (tagEntry.value || []); track value) {
-                <span class="tag-value" [title]="value">{{
-                  value | address
-                }}
-                @if (getNameForAddress(value)) {
+                <a
+                  class="tag-value"
+                  [routerLink]="['/accounts', value]"
+                  [title]="value"
+                  >{{ value | address }}
+                  @if (getNameForAddress(value)) {
                   <span class="tag-name">[{{ getNameForAddress(value) }}]</span>
-                }
-                </span>
+                  }
+                </a>
                 }
               </div>
             </div>
@@ -115,30 +124,37 @@ interface BSNData {
       }
       .tag-value {
         background: #007bff22;
-        padding: 2px 6px;
-        border-radius: 3px;
+        padding: 4px 8px;
+        border-radius: 4px;
         font-size: 0.9em;
-        cursor: help;
+        cursor: pointer;
+        text-decoration: none;
+        color: inherit;
+        display: inline-flex;
+        align-items: center;
+      }
+      .tag-value:hover {
+        background: #007bff33;
       }
       .about {
         margin: 8px 0;
         font-style: italic;
         color: #666;
       }
-      
+
       .websites {
         margin: 8px 0;
         display: flex;
         flex-direction: column;
         gap: 4px;
       }
-      
+
       .websites a {
         color: #007bff;
         font-size: 0.9em;
         text-decoration: none;
       }
-      
+
       .websites a:hover {
         text-decoration: underline;
       }
@@ -156,7 +172,7 @@ interface BSNData {
       }
       .account-header:hover {
         opacity: 0.8;
-        background: rgba(0,0,0,0.05);
+        background: rgba(0, 0, 0, 0.05);
       }
       .account-header h3 {
         margin: 0 0 8px 0;
@@ -164,12 +180,31 @@ interface BSNData {
       .address-display {
         margin: 0;
       }
+      .rating {
+        font-size: 0.8em;
+        margin-left: 8px;
+        padding: 2px 6px;
+        border-radius: 10px;
+      }
+      .rating.high {
+        background: #4caf5022;
+        color: #4caf50;
+      }
+      .rating.medium {
+        background: #ff980022;
+        color: #ff9800;
+      }
+      .rating.low {
+        background: #f4433622;
+        color: #f44336;
+      }
     `,
   ],
 })
 export class AccountsListComponent implements OnInit {
   dataService = inject(DataService);
-  
+  private ratingService = inject(RatingService);
+
   uniqueTags: string[] = [];
   selectedTag = '';
   filteredAccounts: [string, any][] = [];
@@ -181,7 +216,9 @@ export class AccountsListComponent implements OnInit {
 
   async filterByTag() {
     if (this.selectedTag) {
-      this.filteredAccounts = await this.dataService.getAccountsByTag(this.selectedTag);
+      this.filteredAccounts = await this.dataService.getAccountsByTag(
+        this.selectedTag
+      );
     } else {
       const data = await this.dataService.getData();
       this.filteredAccounts = this.sortAccounts(
@@ -196,26 +233,25 @@ export class AccountsListComponent implements OnInit {
 
   private sortAccounts(accounts: [string, any][]): [string, any][] {
     return accounts.sort((a, b) => {
-      // Primary sort: number of tags (descending)
+      // Primary sort: rating (descending)
+      const ratingA = this.getRating(a[1]);
+      const ratingB = this.getRating(b[1]);
+      if (ratingA !== ratingB) return ratingB - ratingA;
+
+      // Secondary sort: number of tags
       const tagsA = this.getTagCount(a[1]);
       const tagsB = this.getTagCount(b[1]);
       if (tagsA !== tagsB) return tagsB - tagsA;
 
-      // Secondary sort: by name
-      const nameA = (a[1].name || '').toLowerCase();
-      const nameB = (b[1].name || '').toLowerCase();
-      if (nameA !== nameB) {
-        if (!nameA) return 1;
-        if (!nameB) return -1;
-        return nameA.localeCompare(nameB);
-      }
-
-      // Tertiary sort: by address
       return a[0].localeCompare(b[0]);
     });
   }
 
-   getNameForAddress(address: string): string | null {
+  getRating(account: any): number {
+    return this.ratingService.calculateRating(account);
+  }
+
+  getNameForAddress(address: string): string | null {
     const data = this.filteredAccounts.find(([addr]) => addr === address);
     if (data && data[1].profile?.Name?.[0]) {
       return data[1].profile.Name[0];
