@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, computed, effect, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DataService } from '../services/data.service';
@@ -17,77 +17,83 @@ interface BSNData {
 @Component({
   selector: 'app-accounts-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, AddressPipe, RouterLink, LoadingSpinnerComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    AddressPipe,
+    RouterLink,
+    LoadingSpinnerComponent,
+  ],
   template: `
     <div class="accounts-container">
       @if (dataService.loading$ | async) {
-        <app-loading-spinner />
+      <app-loading-spinner />
       } @else {
-        <div class="filters">
-          <h3>Filter by Tag</h3>
-          <select [(ngModel)]="selectedTag" (change)="filterByTag()">
-            <option value="">All Accounts</option>
-            @for (tag of uniqueTags; track tag) {
-            <option [value]="tag">{{ tag }}</option>
+      <div class="filters">
+        <h3>Filter by Tag</h3>
+        <select [(ngModel)]="selectedTag" (change)="filterByTag()">
+          <option value="">All Accounts</option>
+          @for (tag of uniqueTags; track tag) {
+          <option [value]="tag">{{ tag }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="accounts-grid">
+        @for (account of filteredAccounts(); track account[0]) {
+        <div class="account-card">
+          <div class="account-header" [routerLink]="['/accounts', account[0]]">
+            @if (account[1].profile?.Name) {
+            <h3>{{ account[1].profile.Name[0] }}</h3>
             }
-          </select>
-        </div>
+            <h4 class="address-display" [title]="account[0]">
+              {{ account[0] | address }}
+              <span
+                class="rating"
+                [class.high]="getRating(account[1]) > 70"
+                [class.medium]="
+                  getRating(account[1]) > 30 && getRating(account[1]) <= 70
+                "
+                [class.low]="getRating(account[1]) <= 30"
+              >
+                ({{ getRating(account[1]) }})
+              </span>
+            </h4>
+          </div>
 
-        <div class="accounts-grid">
-          @for (account of filteredAccounts; track account[0]) {
-          <div class="account-card">
-            <div class="account-header" [routerLink]="['/accounts', account[0]]">
-              @if (account[1].profile?.Name) {
-              <h3>{{ account[1].profile.Name[0] }}</h3>
-              }
-              <h4 class="address-display" [title]="account[0]">
-                {{ account[0] | address }}
-                <span
-                  class="rating"
-                  [class.high]="getRating(account[1]) > 70"
-                  [class.medium]="
-                    getRating(account[1]) > 30 && getRating(account[1]) <= 70
-                  "
-                  [class.low]="getRating(account[1]) <= 30"
-                >
-                  ({{ getRating(account[1]) }})
-                </span>
-              </h4>
-            </div>
-
-            @if (account[1].profile?.About) {
-            <p class="about">{{ account[1].profile.About[0] }}</p>
-            } @if (account[1].profile?.Website) {
-            <div class="websites">
-              @for (website of account[1].profile.Website; track website) {
-              <a [href]="website" target="_blank" rel="noopener">{{ website }}</a>
-              }
-            </div>
-            } @if (account[1].tags) {
-            <div class="tags">
-              @for (tagEntry of account[1].tags | keyvalue; track tagEntry.key) {
-              <div class="tag">
-                <span>{{ tagEntry.key }}:</span>
-                <div class="tag-values">
-                  @for (value of (tagEntry.value || []); track value) {
-                  <a
-                    class="tag-value"
-                    [routerLink]="['/accounts', value]"
-                    [title]="value"
-                    >{{ value | address }}
-                    @if (getNameForAddress(value)) {
-                    <span class="tag-name">[{{ getNameForAddress(value) }}]</span>
-                    }
-                  </a>
+          @if (account[1].profile?.About) {
+          <p class="about">{{ account[1].profile.About[0] }}</p>
+          } @if (account[1].profile?.Website) {
+          <div class="websites">
+            @for (website of account[1].profile.Website; track website) {
+            <a [href]="website" target="_blank" rel="noopener">{{ website }}</a>
+            }
+          </div>
+          } @if (account[1].tags) {
+          <div class="tags">
+            @for (tagEntry of account[1].tags | keyvalue; track tagEntry.key) {
+            <div class="tag">
+              <span>{{ tagEntry.key }}:</span>
+              <div class="tag-values">
+                @for (value of (tagEntry.value || []); track value) {
+                <a
+                  class="tag-value"
+                  [routerLink]="['/accounts', value]"
+                  [title]="value"
+                  >{{ value | address }}
+                  @if (getNameForAddress(value)) {
+                  <span class="tag-name">[{{ getNameForAddress(value) }}]</span>
                   }
-                </div>
+                </a>
+                }
               </div>
-              }
             </div>
             }
           </div>
           }
         </div>
+        }
+      </div>
       }
     </div>
   `,
@@ -212,24 +218,47 @@ export class AccountsListComponent implements OnInit {
 
   uniqueTags: string[] = [];
   selectedTag = '';
-  filteredAccounts: [string, any][] = [];
+  filteredAccounts = computed(() => {
+    const data = this.dataService.data();
+    if (!data?.accounts) return [];
 
-  async ngOnInit() {
-    this.uniqueTags = await this.dataService.getUniqueTags();
-    await this.filterByTag();
+    if (this.selectedTag) {
+      return Object.entries(data.accounts)
+        .filter(
+          ([_, account]) => account.tags && this.selectedTag in account.tags
+        )
+        .sort((a, b) => a[0].localeCompare(b[0]));
+    }
+
+    return this.sortAccounts(Object.entries(data.accounts));
+  });
+
+  constructor() {
+    // Set up effect to update unique tags when data changes
+    effect(() => {
+      const data = this.dataService.data();
+      if (!data?.accounts) {
+        this.uniqueTags = [];
+        return;
+      }
+
+      const tags = new Set<string>();
+      Object.values(data.accounts).forEach((account) => {
+        if (account.tags) {
+          Object.keys(account.tags).forEach((tag) => tags.add(tag));
+        }
+      });
+      this.uniqueTags = Array.from(tags).sort();
+    });
   }
 
-  async filterByTag() {
-    if (this.selectedTag) {
-      this.filteredAccounts = await this.dataService.getAccountsByTag(
-        this.selectedTag
-      );
-    } else {
-      const data = this.dataService.data();
-      this.filteredAccounts = this.sortAccounts(
-        data ? Object.entries(data['accounts']) : []
-      );
-    }
+  async ngOnInit() {
+    await this.dataService.getData();
+  }
+
+  filterByTag() {
+    // Just trigger recomputation by accessing the signal
+    this.dataService.data();
   }
 
   private getTagCount(account: any): number {
@@ -257,7 +286,7 @@ export class AccountsListComponent implements OnInit {
   }
 
   getNameForAddress(address: string): string | null {
-    const data = this.filteredAccounts.find(([addr]) => addr === address);
+    const data = this.filteredAccounts().find(([addr]) => addr === address);
     if (data && data[1].profile?.Name?.[0]) {
       return data[1].profile.Name[0];
     }
