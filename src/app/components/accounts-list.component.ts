@@ -58,7 +58,11 @@ interface BSNData {
                 @for (value of (tagEntry.value || []); track value) {
                 <span class="tag-value" [title]="value">{{
                   value | address
-                }}</span>
+                }}
+                @if (getNameForAddress(value)) {
+                  <span class="tag-name">[{{ getNameForAddress(value) }}]</span>
+                }
+                </span>
                 }
               </div>
             </div>
@@ -135,6 +139,11 @@ interface BSNData {
       .websites a:hover {
         text-decoration: underline;
       }
+      .tag-name {
+        margin-left: 4px;
+        color: #666;
+        font-size: 0.9em;
+      }
     `,
   ],
 })
@@ -184,5 +193,13 @@ export class AccountsListComponent implements OnInit {
       // Tertiary sort: by address
       return a[0].localeCompare(b[0]);
     });
+  }
+
+   getNameForAddress(address: string): string | null {
+    const data = this.filteredAccounts.find(([addr]) => addr === address);
+    if (data && data[1].profile?.Name?.[0]) {
+      return data[1].profile.Name[0];
+    }
+    return null;
   }
 }
