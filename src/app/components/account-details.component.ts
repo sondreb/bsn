@@ -1,7 +1,7 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, effect, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
-import { DataService } from '../services/data.service';
+import { BSNData, DataService } from '../services/data.service';
 import { AddressPipe } from '../pipes/address.pipe';
 import { RouterLink } from '@angular/router';
 import { RatingService } from '../services/rating.service';
@@ -220,12 +220,25 @@ export class AccountDetailsComponent implements OnInit {
   account: any = null;
   private accounts: Record<string, any> = {};
 
-  ngOnInit() {
-    this.address = this.route.snapshot.paramMap.get('address') || '';
-    const data = this.dataService.data();
-    this.account = data?.accounts?.[this.address];
-    this.accounts = data?.accounts || {};
+  data: BSNData | null = null;
+
+  constructor() {
+    effect(() => {
+      if (this.dataService.data()) {
+        this.data = this.dataService.data();
+        this.accounts = this.data?.accounts || {};
+
+        this.route.paramMap.subscribe(async (params) => {
+          this.address = params.get('address') || '';
+          // this.address = this.route.snapshot.paramMap.get('address') || '';
+          // const data = this.dataService.data();
+          this.account = this.data?.accounts?.[this.address];
+        });
+      }
+    });
   }
+
+  ngOnInit() {}
 
   objectEntries(obj: any): [string, any][] {
     return Object.entries(obj);
