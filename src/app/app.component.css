@@ -44,3 +44,21 @@
   transform: scale(1.05);
   background-color: #0056b3;
 }
+
+.app-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+main {
+  display: grid;
+  gap: 30px;
+}
