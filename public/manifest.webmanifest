@@ -3,7 +3,7 @@
   "short_name": "BSN",
   "author": "SondreB",
   "description": "An app that explores the social network that exists on Stellar blockchain.",
-  "theme_color": "#1976d2",
+  "theme_color": "#ffffff",
   "background_color": "#fafafa",
   "display": "standalone",
   "scope": "./",
