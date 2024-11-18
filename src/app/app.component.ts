@@ -29,6 +29,36 @@ import { FormsModule } from '@angular/forms';
   `,
   styles: [`
     /* ...existing styles... */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding: 1rem;
+      background: #fff;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.8rem;
+    }
+
+    .install-button {
+      margin-left: auto; /* Ensures button stays right */
+      padding: 8px 16px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .install-button:hover {
+      background-color: #0056b3;
+    }
+
     .tabs {
       display: flex;
       gap: 1px;
