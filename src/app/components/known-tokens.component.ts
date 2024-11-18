@@ -54,8 +54,7 @@ export class KnownTokensComponent implements OnInit {
   dataService = inject(DataService);
   knownTokens: string[] = [];
 
-  async ngOnInit() {
-    const data = await this.dataService.getData();
-    this.knownTokens = data?.knownTokens || [];
+  ngOnInit() {
+    this.knownTokens = this.dataService.data()?.knownTokens || [];
   }
 }

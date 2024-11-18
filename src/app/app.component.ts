@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { DataService } from './services/data.service';
 
 @Component({
   selector: 'app-root',
@@ -82,10 +83,15 @@ import { FormsModule } from '@angular/forms';
   `]
 })
 export class AppComponent implements OnInit {
+  private dataService = inject(DataService);
   deferredPrompt: any;
   showInstallButton = false;
 
-  ngOnInit() {
+  async ngOnInit() {
+    // Load data on app initialization
+    await this.dataService.getData();
+
+    // PWA installation logic
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       this.deferredPrompt = e;

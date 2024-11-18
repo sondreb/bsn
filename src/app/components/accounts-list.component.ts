@@ -225,7 +225,7 @@ export class AccountsListComponent implements OnInit {
         this.selectedTag
       );
     } else {
-      const data = await this.dataService.getData();
+      const data = this.dataService.data();
       this.filteredAccounts = this.sortAccounts(
         data ? Object.entries(data['accounts']) : []
       );

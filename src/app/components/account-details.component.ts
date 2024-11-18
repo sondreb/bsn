@@ -220,9 +220,9 @@ export class AccountDetailsComponent implements OnInit {
   account: any = null;
   private accounts: Record<string, any> = {};
 
-  async ngOnInit() {
+  ngOnInit() {
     this.address = this.route.snapshot.paramMap.get('address') || '';
-    const data = await this.dataService.getData();
+    const data = this.dataService.data();
     this.account = data?.accounts?.[this.address];
     this.accounts = data?.accounts || {};
   }
