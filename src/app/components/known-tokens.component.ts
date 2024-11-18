@@ -1,7 +1,6 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataService } from '../services/data.service';
-import { map } from 'rxjs';
 import { AddressPipe } from '../pipes/address.pipe';
 
 @Component({
@@ -12,7 +11,7 @@ import { AddressPipe } from '../pipes/address.pipe';
     <div class="tokens-container">
       <h2>Known Tokens</h2>
       <div class="token-grid">
-        @for (token of knownTokens$ | async; track token) {
+        @for (token of knownTokens; track token) {
           <div class="token-card" [title]="token">
             <div class="token-name">{{ token.split('-')[0] }}</div>
             @if (token.includes('-')) {
@@ -51,12 +50,12 @@ import { AddressPipe } from '../pipes/address.pipe';
     `,
   ],
 })
-export class KnownTokensComponent {
+export class KnownTokensComponent implements OnInit {
   dataService = inject(DataService);
+  knownTokens: string[] = [];
 
-  knownTokens$ = this.dataService
-    .getData()
-    .pipe(map((data) => data?.knownTokens || []));
-
-  constructor() {}
+  async ngOnInit() {
+    const data = await this.dataService.getData();
+    this.knownTokens = data?.knownTokens || [];
+  }
 }

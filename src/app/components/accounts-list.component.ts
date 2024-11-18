@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DataService } from '../services/data.service';
@@ -21,36 +21,51 @@ interface BSNData {
         <h3>Filter by Tag</h3>
         <select [(ngModel)]="selectedTag" (change)="filterByTag()">
           <option value="">All Accounts</option>
-          @for (tag of uniqueTags$ | async; track tag) {
-            <option [value]="tag">{{ tag }}</option>
+          @for (tag of uniqueTags; track tag) {
+          <option [value]="tag">{{ tag }}</option>
           }
         </select>
       </div>
 
       <div class="accounts-grid">
-        @for (account of filteredAccounts$ | async; track account[0]) {
-          <div class="account-card">
-            <h4 class="address-display" [title]="account[0]">
-              {{ account[0] | address }}
-            </h4>
-            @if (account[1].profile?.Name) {
-              <p>Name: {{ account[1].profile.Name[0] }}</p>
-            }
-            @if (account[1].tags) {
-              <div class="tags">
-                @for (tagEntry of account[1].tags | keyvalue; track tagEntry.key) {
-                  <div class="tag">
-                    <span>{{ tagEntry.key }}:</span>
-                    <div class="tag-values">
-                      @for (value of (tagEntry.value || []); track value) {
-                        <span class="tag-value" [title]="value">{{ value | address }}</span>
-                      }
-                    </div>
-                  </div>
+        @for (account of filteredAccounts; track account[0]) {
+        <div class="account-card">
+          @if (account[1].profile?.Name) {
+          <h3>{{ account[1].profile.Name[0] }}</h3>
+          }
+          <h4 class="address-display" [title]="account[0]">
+            {{ account[0] | address }}
+          </h4>
+          
+          @if (account[1].profile?.About) {
+            <p class="about">{{ account[1].profile.About[0] }}</p>
+          }
+          
+          @if (account[1].profile?.Website) {
+            <div class="websites">
+              @for (website of account[1].profile.Website; track website) {
+                <a [href]="website" target="_blank" rel="noopener">{{ website }}</a>
+              }
+            </div>
+          }
+
+          @if (account[1].tags) {
+          <div class="tags">
+            @for (tagEntry of account[1].tags | keyvalue; track tagEntry.key) {
+            <div class="tag">
+              <span>{{ tagEntry.key }}:</span>
+              <div class="tag-values">
+                @for (value of (tagEntry.value || []); track value) {
+                <span class="tag-value" [title]="value">{{
+                  value | address
+                }}</span>
                 }
               </div>
+            </div>
             }
           </div>
+          }
+        </div>
         }
       </div>
     </div>
@@ -98,35 +113,51 @@ interface BSNData {
         font-size: 0.9em;
         cursor: help;
       }
+      .about {
+        margin: 8px 0;
+        font-style: italic;
+        color: #666;
+      }
+      
+      .websites {
+        margin: 8px 0;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      
+      .websites a {
+        color: #007bff;
+        font-size: 0.9em;
+        text-decoration: none;
+      }
+      
+      .websites a:hover {
+        text-decoration: underline;
+      }
     `,
   ],
 })
-export class AccountsListComponent {
+export class AccountsListComponent implements OnInit {
   dataService = inject(DataService);
-
-  uniqueTags$ = this.dataService.getUniqueTags();
+  
+  uniqueTags: string[] = [];
   selectedTag = '';
-  filteredAccounts$ = this.dataService
-    .getData()
-    .pipe(
-      map((data: BSNData | null) => (data ? Object.entries(data['accounts']) : [])),
-      map(accounts => this.sortAccounts(accounts))
-    );
+  filteredAccounts: [string, any][] = [];
 
-  constructor() {}
+  async ngOnInit() {
+    this.uniqueTags = await this.dataService.getUniqueTags();
+    await this.filterByTag();
+  }
 
-  filterByTag() {
+  async filterByTag() {
     if (this.selectedTag) {
-      this.filteredAccounts$ = this.dataService.getAccountsByTag(
-        this.selectedTag
-      );
+      this.filteredAccounts = await this.dataService.getAccountsByTag(this.selectedTag);
     } else {
-      this.filteredAccounts$ = this.dataService
-        .getData()
-        .pipe(
-          map((data: BSNData | null) => (data ? Object.entries(data['accounts']) : [])),
-          map(accounts => this.sortAccounts(accounts))
-        );
+      const data = await this.dataService.getData();
+      this.filteredAccounts = this.sortAccounts(
+        data ? Object.entries(data['accounts']) : []
+      );
     }
   }
 

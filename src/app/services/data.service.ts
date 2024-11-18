@@ -1,68 +1,56 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
 
 export interface BSNData {
-  createDate: string;
+  accounts: Record<string, any>;
   knownTokens: string[];
-  usedSources: string[];
-  accounts: { [key: string]: Account };
-}
-
-export interface Account {
-  profile?: {
-    Name?: string[];
-    About?: string[];
-    Website?: string[];
-  };
-  balances: { [key: string]: string };
-  tags?: { [key: string]: string[] };
+  [key: string]: any;
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataService {
-  private bsnData = new BehaviorSubject<BSNData | null>(null);
-  private uniqueTags = new BehaviorSubject<string[]>([]);
+  private cachedData: BSNData | null = null;
+  private readonly dataUrl = 'https://bsn.mtla.me/json';
 
-  constructor(private http: HttpClient) {
-    this.fetchData();
+  async getData(): Promise<BSNData | null> {
+    if (this.cachedData) {
+      return this.cachedData;
+    }
+
+    try {
+      const response = await fetch(this.dataUrl);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      this.cachedData = await response.json();
+      return this.cachedData;
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      return null;
+    }
   }
 
-  private fetchData() {
-    this.http.get<BSNData>('https://bsn.mtla.me/json').subscribe(data => {
-      this.bsnData.next(data);
-      this.updateUniqueTags(data);
-    });
-  }
+  async getUniqueTags(): Promise<string[]> {
+    const data = await this.getData();
+    if (!data?.accounts) return [];
 
-  private updateUniqueTags(data: BSNData) {
-    const tagsSet = new Set<string>();
+    const tags = new Set<string>();
     Object.values(data.accounts).forEach(account => {
       if (account.tags) {
-        Object.keys(account.tags).forEach(tag => tagsSet.add(tag));
+        Object.keys(account.tags).forEach(tag => tags.add(tag));
       }
     });
-    this.uniqueTags.next(Array.from(tagsSet).sort());
+    return Array.from(tags);
   }
 
-  getData(): Observable<BSNData | null> {
-    return this.bsnData.asObservable();
-  }
+  async getAccountsByTag(tag: string): Promise<[string, any][]> {
+    const data = await this.getData();
+    if (!data?.accounts) return [];
 
-  getUniqueTags(): Observable<string[]> {
-    return this.uniqueTags.asObservable();
-  }
+    const entries = Object.entries(data.accounts)
+      .filter(([_, account]) => account.tags && tag in account.tags);
 
-  getAccountsByTag(tag: string): Observable<[string, Account][]> {
-    return this.bsnData.pipe(
-      map(data => {
-        if (!data) return [];
-        return Object.entries(data.accounts)
-          .filter(([_, account]) => account.tags && account.tags[tag]);
-      })
-    );
+    return entries;
   }
 }
