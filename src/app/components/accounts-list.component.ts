@@ -303,10 +303,21 @@ export class AccountsListComponent implements OnInit {
     // Apply search filter
     const searchQuery = this.dataService.searchQuery().toLowerCase();
     if (searchQuery) {
-      filtered = filtered.filter(([_, account]) => {
+      filtered = filtered.filter(([address, account]) => {
         const name = account.profile?.Name?.[0]?.toLowerCase() || '';
         const about = account.profile?.About?.[0]?.toLowerCase() || '';
-        return name.includes(searchQuery) || about.includes(searchQuery);
+        
+        // Check if search query matches start or end of address
+        const addressStart = address.slice(0, 4).toLowerCase();
+        const addressEnd = address.slice(-4).toLowerCase();
+        const isAddressMatch = searchQuery.length >= 4 && (
+          addressStart.includes(searchQuery.slice(0, 4)) || 
+          addressEnd.includes(searchQuery.slice(-4))
+        );
+
+        return name.includes(searchQuery) || 
+               about.includes(searchQuery) || 
+               isAddressMatch;
       });
     }
 
