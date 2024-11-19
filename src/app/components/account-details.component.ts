@@ -15,7 +15,9 @@ import { FavoritesService } from '../services/favorites.service';
     <div class="account-container" *ngIf="account">
       <header class="account-header">
         <div>
-          <h2>Account Details</h2>
+          @if (account.profile?.Name) {
+          <h2>{{ account.profile.Name[0] }}</h2>
+          }
           <div class="address-display" [title]="address">
             {{ address | address }}
             <span
@@ -39,9 +41,7 @@ import { FavoritesService } from '../services/favorites.service';
 
       @if (account.profile) {
       <section class="profile-section">
-        @if (account.profile.Name) {
-        <h3>{{ account.profile.Name[0] }}</h3>
-        } @if (account.profile.About) {
+        @if (account.profile.About) {
         <p class="about">{{ account.profile.About[0] }}</p>
         } @if (account.profile.Website) {
         <div class="websites">
