@@ -12,6 +12,7 @@ export interface BSNData {
 })
 export class DataService {
   private readonly API_URL = 'https://bsn.mtla.me/json';
+  private readonly _searchQuery = signal('');
 
   loading$ = new BehaviorSubject<boolean>(false);
   data = signal<BSNData | null>(null);
@@ -55,5 +56,13 @@ export class DataService {
     return Object.entries(data.accounts)
       .filter(([_, account]) => account.tags && tag in account.tags)
       .sort((a, b) => a[0].localeCompare(b[0]));
+  }
+
+  searchQuery() {
+    return this._searchQuery();
+  }
+
+  setSearchQuery(query: string) {
+    this._searchQuery.set(query);
   }
 }

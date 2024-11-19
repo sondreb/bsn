@@ -8,18 +8,28 @@ import { SwUpdate } from '@angular/service-worker';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, CommonModule, FormsModule],
+  imports: [
+    RouterOutlet,
+    RouterLink,
+    RouterLinkActive,
+    CommonModule,
+    FormsModule,
+  ],
   template: `
     <div class="app-container">
       <header>
         <h1>Blockchain Social Network</h1>
-        <button *ngIf="showInstallButton" (click)="installPwa()" class="install-button">
+        <button
+          *ngIf="showInstallButton"
+          (click)="installPwa()"
+          class="install-button"
+        >
           Install App
         </button>
       </header>
 
       <div *ngIf="updateAvailable" class="update-banner">
-        A new version is available. 
+        A new version is available.
         <button (click)="updateApp()" class="update-button">Update Now</button>
       </div>
 
@@ -30,110 +40,150 @@ import { SwUpdate } from '@angular/service-worker';
         <a routerLink="/tags" routerLinkActive="active">Tags</a>
       </nav>
 
+      <div class="search-container">
+        <input
+          type="search"
+          [(ngModel)]="searchQuery"
+          (input)="onSearch()"
+          placeholder="Search accounts by name or description..."
+          class="search-input"
+        />
+      </div>
+
       <main>
         <router-outlet></router-outlet>
       </main>
     </div>
   `,
-  styles: [`
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-      padding: 1rem;
-      background: rgba(255, 255, 255, 0.95);
-      border-radius: 8px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
+  styles: [
+    `
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
 
-    header h1 {
-      margin: 0;
-      font-size: 1.8rem;
-      color: #333;
-    }
+      header h1 {
+        margin: 0;
+        font-size: 1.8rem;
+        color: #333;
+      }
 
-    .install-button {
-      margin-left: auto;
-      padding: 8px 16px;
-      background-color: #764ba2;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      font-size: 0.9rem;
-      cursor: pointer;
-      transition: background-color 0.2s;
-    }
+      .install-button {
+        margin-left: auto;
+        padding: 8px 16px;
+        background-color: #764ba2;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: background-color 0.2s;
+      }
 
-    .install-button:hover {
-      background-color: #667eea;
-    }
+      .install-button:hover {
+        background-color: #667eea;
+      }
 
-    .tabs {
-      display: flex;
-      gap: 1px;
-      background: rgba(255, 255, 255, 0.2);
-      padding: 1px;
-      margin-bottom: 20px;
-      border-radius: 8px;
-      overflow: hidden;
-    }
-    .tabs a {
-      padding: 12px 24px;
-      background: rgba(255, 255, 255, 0.9);
-      text-decoration: none;
-      color: #666;
-      flex: 1;
-      text-align: center;
-      transition: all 0.3s ease;
-    }
-    .tabs a.active {
-      background: #fff;
-      color: #764ba2;
-      font-weight: bold;
-    }
-    .tabs a:hover:not(.active) {
-      background: rgba(255, 255, 255, 1);
-    }
+      .tabs {
+        display: flex;
+        gap: 1px;
+        background: rgba(255, 255, 255, 0.2);
+        padding: 1px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      .tabs a {
+        padding: 12px 24px;
+        background: rgba(255, 255, 255, 0.9);
+        text-decoration: none;
+        color: #666;
+        flex: 1;
+        text-align: center;
+        transition: all 0.3s ease;
+      }
+      .tabs a.active {
+        background: #fff;
+        color: #764ba2;
+        font-weight: bold;
+      }
+      .tabs a:hover:not(.active) {
+        background: rgba(255, 255, 255, 1);
+      }
 
-    .update-banner {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      background: #4caf50;
-      color: white;
-      padding: 10px;
-      text-align: center;
-      z-index: 1000;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 10px;
-    }
+      .update-banner {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: #4caf50;
+        color: white;
+        padding: 10px;
+        text-align: center;
+        z-index: 1000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+      }
 
-    .update-button {
-      padding: 4px 8px;
-      background: white;
-      color: #4caf50;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 0.9rem;
-    }
+      .update-button {
+        padding: 4px 8px;
+        background: white;
+        color: #4caf50;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.9rem;
+      }
 
-    .update-button:hover {
-      background: #eee;
-    }
-  `]
+      .update-button:hover {
+        background: #eee;
+      }
+
+      .search-container {
+        margin-bottom: 20px;
+        padding: 0 1rem;
+      }
+
+      .search-input {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #eee;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.3s ease;
+      }
+
+      .search-input:focus {
+        outline: none;
+        border-color: #764ba2;
+      }
+
+      .search-input::placeholder {
+        color: #999;
+      }
+    `,
+  ],
 })
 export class AppComponent implements OnInit {
   private dataService = inject(DataService);
   private swUpdate = inject(SwUpdate);
-  
+
   deferredPrompt: any;
   showInstallButton = false;
   updateAvailable = false;
+  searchQuery = '';
+
+  constructor() {
+    this.onSearch = this.debounce(this.onSearch.bind(this), 300);
+  }
 
   async ngOnInit() {
     // Load data on app initialization
@@ -154,7 +204,7 @@ export class AppComponent implements OnInit {
       }, 6 * 60 * 60 * 1000);
 
       // Subscribe to available updates
-      this.swUpdate.versionUpdates.subscribe(event => {
+      this.swUpdate.versionUpdates.subscribe((event) => {
         switch (event.type) {
           case 'VERSION_READY':
             this.updateAvailable = true;
@@ -186,13 +236,25 @@ export class AppComponent implements OnInit {
 
   async installPwa() {
     if (!this.deferredPrompt) return;
-    
+
     this.deferredPrompt.prompt();
     const { outcome } = await this.deferredPrompt.userChoice;
-    
+
     if (outcome === 'accepted') {
       this.showInstallButton = false;
     }
     this.deferredPrompt = null;
+  }
+
+  onSearch() {
+    this.dataService.setSearchQuery(this.searchQuery);
+  }
+
+  private debounce(fn: Function, delay: number): (...args: any[]) => void {
+    let timeoutId: ReturnType<typeof setTimeout>;
+    return function (this: any, ...args: any[]) {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => fn.apply(this, args), delay);
+    };
   }
 }

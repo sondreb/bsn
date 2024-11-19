@@ -268,6 +268,16 @@ export class AccountsListComponent implements OnInit {
 
     let filtered = Object.entries(data.accounts);
 
+    // Apply search filter
+    const searchQuery = this.dataService.searchQuery().toLowerCase();
+    if (searchQuery) {
+      filtered = filtered.filter(([_, account]) => {
+        const name = account.profile?.Name?.[0]?.toLowerCase() || '';
+        const about = account.profile?.About?.[0]?.toLowerCase() || '';
+        return name.includes(searchQuery) || about.includes(searchQuery);
+      });
+    }
+
     // Apply selected tag filter if exists
     if (this.selectedTag) {
       filtered = filtered.filter(
