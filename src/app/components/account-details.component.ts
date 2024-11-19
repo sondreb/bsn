@@ -60,7 +60,10 @@ import { FavoritesService } from '../services/favorites.service';
           <h3>Given Tags</h3>
           @for (tagGroup of getGivenTagGroups(); track tagGroup.type) {
           <div class="tag-group">
-            <h4>{{ tagGroup.type }}</h4>
+            <h4>
+              {{ tagGroup.type }}
+              <span class="tag-count">({{ tagGroup.values.length }})</span>
+            </h4>
             <div class="tag-values">
               @for (value of tagGroup.values; track value) {
               <a
@@ -83,11 +86,13 @@ import { FavoritesService } from '../services/favorites.service';
           <h3>Received Tags</h3>
           @for (tagGroup of getReceivedTagGroups(); track tagGroup.type) {
           <div class="tag-group">
-            <h4>{{ tagGroup.type }}</h4>
+            <h4>
+              {{ tagGroup.type }}
+              <span class="tag-count">({{ tagGroup.tags.length }})</span>
+            </h4>
             <div class="tag-values">
               @for (tag of tagGroup.tags; track tag.fromAddress) {
               <span class="tag-value">
-                <span class="from-address">from</span>
                 <a [routerLink]="['/accounts', tag.fromAddress]">
                   {{ tag.fromAddress | address }}
                   @if (getNameForAddress(tag.fromAddress)) {
@@ -235,6 +240,12 @@ import { FavoritesService } from '../services/favorites.service';
       .favorite-button:hover {
         transform: scale(1.05);
         box-shadow: 0 2px 8px rgba(118, 75, 162, 0.2);
+      }
+      .tag-count {
+        font-size: 0.8em;
+        color: #666;
+        font-weight: normal;
+        margin-left: 0.5rem;
       }
     `,
   ],
