@@ -47,64 +47,94 @@ import { SwUpdate } from '@angular/service-worker';
   `,
   styles: [
     `
+      :host {
+        display: block;
+        min-height: 100vh;
+        background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+      }
+
+      .app-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 1rem;
+      }
+
       header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 20px;
-        padding: 1rem;
-        background: rgba(255, 255, 255, 0.95);
-        border-radius: 8px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+        padding: 1.5rem;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
       }
 
       header h1 {
         margin: 0;
-        font-size: 1.8rem;
-        color: #333;
+        font-size: 2rem;
+        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-weight: 700;
       }
 
       .install-button {
-        margin-left: auto;
-        padding: 8px 16px;
-        background-color: #764ba2;
+        padding: 0.75rem 1.5rem;
+        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
         color: white;
         border: none;
-        border-radius: 4px;
-        font-size: 0.9rem;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
         cursor: pointer;
-        transition: background-color 0.2s;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(118, 75, 162, 0.2);
       }
 
       .install-button:hover {
-        background-color: #667eea;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(118, 75, 162, 0.3);
       }
 
       .tabs {
         display: flex;
-        gap: 1px;
-        background: rgba(255, 255, 255, 0.2);
-        padding: 1px;
-        margin-bottom: 20px;
-        border-radius: 8px;
-        overflow: hidden;
+        gap: 0.5rem;
+        background: white;
+        padding: 0.5rem;
+        margin-bottom: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
       }
+
       .tabs a {
-        padding: 12px 24px;
-        background: rgba(255, 255, 255, 0.9);
+        padding: 1rem 1.5rem;
+        border-radius: 8px;
         text-decoration: none;
         color: #666;
+        font-weight: 500;
         flex: 1;
         text-align: center;
         transition: all 0.3s ease;
       }
+
       .tabs a.active {
-        background: #fff;
-        color: #764ba2;
-        font-weight: bold;
+        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        color: white;
+        font-weight: 600;
       }
+
       .tabs a:hover:not(.active) {
-        background: rgba(255, 255, 255, 1);
+        background: #f5f7fa;
+        color: #764ba2;
+      }
+
+      main {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        padding: 2rem;
+        min-height: calc(100vh - 200px);
       }
 
       .update-banner {
@@ -112,29 +142,55 @@ import { SwUpdate } from '@angular/service-worker';
         top: 0;
         left: 0;
         right: 0;
-        background: #4caf50;
+        background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
         color: white;
-        padding: 10px;
+        padding: 1rem;
         text-align: center;
         z-index: 1000;
         display: flex;
         justify-content: center;
         align-items: center;
-        gap: 10px;
+        gap: 1rem;
+        font-weight: 500;
       }
 
       .update-button {
-        padding: 4px 8px;
+        padding: 0.5rem 1rem;
         background: white;
         color: #4caf50;
         border: none;
-        border-radius: 4px;
+        border-radius: 6px;
         cursor: pointer;
-        font-size: 0.9rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
       }
 
       .update-button:hover {
-        background: #eee;
+        background: #f5f5f5;
+        transform: translateY(-1px);
+      }
+
+      @media (max-width: 768px) {
+        .app-container {
+          padding: 0.5rem;
+        }
+
+        header {
+          padding: 1rem;
+          margin-bottom: 1rem;
+          flex-direction: column;
+          gap: 1rem;
+          text-align: center;
+        }
+
+        .tabs {
+          flex-direction: column;
+          gap: 0.25rem;
+        }
+
+        main {
+          padding: 1rem;
+        }
       }
     `,
   ],

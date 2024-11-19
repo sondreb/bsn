@@ -132,158 +132,139 @@ interface BSNData {
       }
     </div>
   `,
-  styles: [
-    `
-      .accounts-container {
-        padding: 20px;
-      }
-      .filters {
-        margin-bottom: 20px;
-        padding: 15px;
-        background: #f5f5f5;
-        border-radius: 8px;
-      }
-      .filter-group {
-        display: flex;
-        gap: 20px;
-        margin-bottom: 15px;
-      }
-      .filter-group label {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        cursor: pointer;
-      }
-      .filter-group input[type='radio'] {
-        cursor: pointer;
-      }
+  styles: [`
+    .accounts-container {
+      padding: 1rem;
+    }
+
+    .search-container {
+      margin-bottom: 2rem;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 1rem;
+      border: 2px solid #eee;
+      border-radius: 12px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: #764ba2;
+      box-shadow: 0 4px 12px rgba(118, 75, 162, 0.15);
+    }
+
+    .filters {
+      background: #f8f9fa;
+      padding: 1.5rem;
+      border-radius: 12px;
+      margin-bottom: 2rem;
+    }
+
+    .filter-group {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .filter-group label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .accounts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .account-card {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+    }
+
+    .account-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    .account-header {
+      cursor: pointer;
+      padding: 0.5rem;
+      margin: -0.5rem;
+      border-radius: 8px;
+    }
+
+    .account-header h3 {
+      margin: 0 0 0.5rem 0;
+      color: #333;
+      font-size: 1.2rem;
+    }
+
+    .address-display {
+      font-family: 'Monaco', 'Consolas', monospace;
+      font-size: 0.9rem;
+      color: #666;
+    }
+
+    .rating {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .tag-values {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .tag-value {
+      background: #f0f4ff;
+      padding: 0.5rem 1rem;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      text-decoration: none;
+      color: #4a5568;
+      transition: all 0.3s ease;
+    }
+
+    .tag-value:hover {
+      background: #e2e8ff;
+      transform: translateY(-1px);
+    }
+
+    .about {
+      margin: 1rem 0;
+      color: #666;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 768px) {
       .accounts-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 20px;
-      }
-      .account-card {
-        padding: 15px;
-        background: #f5f5f5;
-        border-radius: 8px;
-      }
-      .tags {
-        margin-top: 10px;
-      }
-      .tag {
-        background: #e0e0e0;
-        padding: 4px 8px;
-        margin: 4px;
-        border-radius: 4px;
-        display: inline-block;
-      }
-      .address-display {
-        cursor: help;
-      }
-      .tag-values {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 4px;
-      }
-      .tag-value {
-        background: #007bff22;
-        padding: 4px 8px;
-        border-radius: 4px;
-        font-size: 0.9em;
-        cursor: pointer;
-        text-decoration: none;
-        color: inherit;
-        display: inline-flex;
-        align-items: center;
-      }
-      .tag-value:hover {
-        background: #007bff33;
-      }
-      .about {
-        margin: 8px 0;
-        font-style: italic;
-        color: #666;
+        grid-template-columns: 1fr;
       }
 
-      .websites {
-        margin: 8px 0;
-        display: flex;
+      .filter-group {
         flex-direction: column;
-        gap: 4px;
+        gap: 1rem;
       }
-
-      .websites a {
-        color: #007bff;
-        font-size: 0.9em;
-        text-decoration: none;
-      }
-
-      .websites a:hover {
-        text-decoration: underline;
-      }
-      .tag-name {
-        margin-left: 4px;
-        color: #666;
-        font-size: 0.9em;
-      }
-      .account-header {
-        cursor: pointer;
-        transition: opacity 0.2s;
-        padding: 4px;
-        margin: -4px;
-        border-radius: 4px;
-      }
-      .account-header:hover {
-        opacity: 0.8;
-        background: rgba(0, 0, 0, 0.05);
-      }
-      .account-header h3 {
-        margin: 0 0 8px 0;
-      }
-      .address-display {
-        margin: 0;
-      }
-      .rating {
-        font-size: 0.8em;
-        margin-left: 8px;
-        padding: 2px 6px;
-        border-radius: 10px;
-      }
-      .rating.high {
-        background: #4caf5022;
-        color: #4caf50;
-      }
-      .rating.medium {
-        background: #ff980022;
-        color: #ff9800;
-      }
-      .rating.low {
-        background: #f4433622;
-        color: #f44336;
-      }
-      .search-container {
-        margin-bottom: 20px;
-      }
-
-      .search-input {
-        width: 100%;
-        padding: 12px;
-        border: 2px solid #eee;
-        border-radius: 8px;
-        font-size: 1rem;
-        transition: border-color 0.3s ease;
-      }
-
-      .search-input:focus {
-        outline: none;
-        border-color: #764ba2;
-      }
-
-      .search-input::placeholder {
-        color: #999;
-      }
-    `,
-  ],
+    }
+  `],
 })
 export class AccountsListComponent implements OnInit {
   dataService = inject(DataService);
