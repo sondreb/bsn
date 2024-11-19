@@ -3,6 +3,7 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DataService } from './services/data.service';
+import { SwUpdate } from '@angular/service-worker';
 
 @Component({
   selector: 'app-root',
@@ -16,6 +17,11 @@ import { DataService } from './services/data.service';
           Install App
         </button>
       </header>
+
+      <div *ngIf="updateAvailable" class="update-banner">
+        A new version is available. 
+        <button (click)="updateApp()" class="update-button">Update Now</button>
+      </div>
 
       <nav class="tabs">
         <a routerLink="/accounts" routerLinkActive="active">Accounts</a>
@@ -89,12 +95,45 @@ import { DataService } from './services/data.service';
     .tabs a:hover:not(.active) {
       background: rgba(255, 255, 255, 1);
     }
+
+    .update-banner {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: #4caf50;
+      color: white;
+      padding: 10px;
+      text-align: center;
+      z-index: 1000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .update-button {
+      padding: 4px 8px;
+      background: white;
+      color: #4caf50;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    .update-button:hover {
+      background: #eee;
+    }
   `]
 })
 export class AppComponent implements OnInit {
   private dataService = inject(DataService);
+  private swUpdate = inject(SwUpdate);
+  
   deferredPrompt: any;
   showInstallButton = false;
+  updateAvailable = false;
 
   async ngOnInit() {
     // Load data on app initialization
@@ -106,6 +145,43 @@ export class AppComponent implements OnInit {
       this.deferredPrompt = e;
       this.showInstallButton = true;
     });
+
+    // PWA update logic
+    if (this.swUpdate.isEnabled) {
+      // Check for updates every 6 hours
+      setInterval(() => {
+        this.swUpdate.checkForUpdate();
+      }, 6 * 60 * 60 * 1000);
+
+      // Subscribe to available updates
+      this.swUpdate.versionUpdates.subscribe(event => {
+        switch (event.type) {
+          case 'VERSION_READY':
+            this.updateAvailable = true;
+            break;
+          case 'VERSION_INSTALLATION_FAILED':
+            console.error('Failed to install app version:', event.error);
+            break;
+        }
+      });
+
+      // Optional: Automatically update during application startup
+      try {
+        const updateFound = await this.swUpdate.checkForUpdate();
+        console.log('Update found on startup:', updateFound);
+      } catch (err) {
+        console.error('Failed to check for updates:', err);
+      }
+    }
+  }
+
+  async updateApp() {
+    try {
+      await this.swUpdate.activateUpdate();
+      document.location.reload();
+    } catch (err) {
+      console.error('Failed to activate update:', err);
+    }
   }
 
   async installPwa() {
