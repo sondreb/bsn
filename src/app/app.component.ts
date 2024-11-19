@@ -1,5 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterOutlet, RouterLink, RouterLinkActive, Router, NavigationEnd } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DataService } from './services/data.service';
@@ -198,12 +198,23 @@ import { SwUpdate } from '@angular/service-worker';
 export class AppComponent implements OnInit {
   private dataService = inject(DataService);
   private swUpdate = inject(SwUpdate);
+  private router = inject(Router);
 
   deferredPrompt: any;
   showInstallButton = false;
   updateAvailable = false;
 
-  constructor() {}
+  constructor() {
+    // Add router event subscription to scroll to top
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        // Check if we're navigating to a details page
+        if (event.url.includes('/accounts/') || event.url.includes('/tags/')) {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      }
+    });
+  }
 
   async ngOnInit() {
     // Load data on app initialization
