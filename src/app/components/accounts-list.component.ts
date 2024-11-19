@@ -15,6 +15,7 @@ import { RouterLink } from '@angular/router';
 import { RatingService } from '../services/rating.service';
 import { LoadingSpinnerComponent } from '../shared/loading-spinner.component';
 import { FavoritesService } from '../services/favorites.service';
+import { NicknameService } from '../services/nickname.service';
 
 // Add this interface if it doesn't exist
 interface BSNData {
@@ -96,6 +97,8 @@ interface BSNData {
           <div class="account-header" [routerLink]="['/accounts', account[0]]">
             @if (account[1].profile?.Name) {
             <h3>{{ account[1].profile.Name[0] }}</h3>
+            } @else if (getNickname(account[0])) {
+              <h3><em>{{ getNickname(account[0]) }}</em></h3>
             }
             <h4 class="address-display" [title]="account[0]">
               {{ account[0] | address }}
@@ -304,6 +307,7 @@ export class AccountsListComponent implements OnInit {
   dataService = inject(DataService);
   private ratingService = inject(RatingService);
   private favoritesService = inject(FavoritesService);
+  private nicknameService = inject(NicknameService);
 
   uniqueTags: string[] = [];
   selectedTag = '';
@@ -416,10 +420,16 @@ export class AccountsListComponent implements OnInit {
 
   getNameForAddress(address: string): string | null {
     const data = this.filteredAccounts().find(([addr]) => addr === address);
-    if (data && data[1].profile?.Name?.[0]) {
-      return data[1].profile.Name[0];
+    if (data) {
+      return data[1].profile?.Name?.[0] || 
+             this.nicknameService.getNickname(address) ||
+             null;
     }
     return null;
+  }
+
+  getNickname(address: string): string | null {
+    return this.nicknameService.getNickname(address);
   }
 
   onSearch() {
