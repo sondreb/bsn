@@ -313,7 +313,7 @@ export class AccountsListComponent implements OnInit {
   selectedTag = '';
   tagFilterMode: 'withTags' | 'withoutTags' = 'withoutTags';
   searchQuery = '';
-  showFavoritesOnly = false;
+  showFavoritesOnly = this.favoritesService.getShowFavoritesOnly();
 
   refresh = signal<boolean>(false);
 
@@ -390,7 +390,7 @@ export class AccountsListComponent implements OnInit {
   }
 
   filterByTag() {
-    // Just trigger recomputation by accessing the signal
+    this.favoritesService.setShowFavoritesOnly(this.showFavoritesOnly);
     this.refresh.set(!this.refresh());
   }
 

@@ -4,40 +4,77 @@ import { Injectable, signal } from '@angular/core';
   providedIn: 'root'
 })
 export class FavoritesService {
-  private readonly STORAGE_KEY = 'bsn-favorites';
+  private readonly FAVORITES_KEY = 'bsn-favorites';
+  private readonly FILTER_KEY = 'bsn-favorites-filter';
   private favorites = signal<Set<string>>(new Set());
+  private showFavoritesOnly = signal<boolean>(false);
 
   constructor() {
     this.loadFromStorage();
   }
 
   private loadFromStorage() {
-    const stored = localStorage.getItem(this.STORAGE_KEY);
-    if (stored) {
-      this.favorites.set(new Set(JSON.parse(stored)));
+    try {
+      const stored = localStorage.getItem(this.FAVORITES_KEY);
+      if (stored) {
+        const favorites = JSON.parse(stored);
+        if (Array.isArray(favorites)) {
+          this.favorites.set(new Set(favorites));
+        }
+      }
+
+      const filterState = localStorage.getItem(this.FILTER_KEY);
+      if (filterState) {
+        this.showFavoritesOnly.set(JSON.parse(filterState) === true);
+      }
+    } catch (error) {
+      console.error('Error loading favorites from storage:', error);
+      // Reset to defaults if there's an error
+      this.favorites.set(new Set());
+      this.showFavoritesOnly.set(false);
     }
   }
 
-  private saveToStorage() {
-    localStorage.setItem(this.STORAGE_KEY, JSON.stringify([...this.favorites()]));
+  private saveFavoritesToStorage() {
+    try {
+      const favoritesArray = Array.from(this.favorites());
+      localStorage.setItem(this.FAVORITES_KEY, JSON.stringify(favoritesArray));
+    } catch (error) {
+      console.error('Error saving favorites to storage:', error);
+    }
+  }
+
+  private saveFilterToStorage() {
+    try {
+      localStorage.setItem(this.FILTER_KEY, JSON.stringify(this.showFavoritesOnly()));
+    } catch (error) {
+      console.error('Error saving filter state to storage:', error);
+    }
   }
 
   toggleFavorite(address: string) {
-    const current = new Set(this.favorites());
-    if (current.has(address)) {
-      current.delete(address);
+    if (!address) return;
+
+    const currentFavorites = new Set(this.favorites());
+    if (currentFavorites.has(address)) {
+      currentFavorites.delete(address);
     } else {
-      current.add(address);
+      currentFavorites.add(address);
     }
-    this.favorites.set(current);
-    this.saveToStorage();
+    this.favorites.set(currentFavorites);
+    this.saveFavoritesToStorage();
   }
 
   isFavorite(address: string): boolean {
-    return this.favorites().has(address);
+    return !!address && this.favorites().has(address);
   }
 
-  getFavorites(): string[] {
-    return [...this.favorites()];
+  setShowFavoritesOnly(value: boolean) {
+    this.showFavoritesOnly.set(value);
+    this.saveFilterToStorage();
+  }
+
+  getShowFavoritesOnly(): boolean {
+    return this.showFavoritesOnly();
   }
 }
