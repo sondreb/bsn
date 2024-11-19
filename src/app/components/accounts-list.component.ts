@@ -94,25 +94,32 @@ interface BSNData {
       <div class="accounts-grid">
         @for (account of filteredAccounts(); track account[0]) {
         <div class="account-card">
-          <div class="account-header" [routerLink]="['/accounts', account[0]]">
-            @if (account[1].profile?.Name) {
-            <h3>{{ account[1].profile.Name[0] }}</h3>
-            } @else if (getNickname(account[0])) {
-              <h3><em>{{ getNickname(account[0]) }}</em></h3>
-            }
-            <h4 class="address-display" [title]="account[0]">
-              {{ account[0] | address }}
-              <span
-                class="rating"
-                [class.high]="getRating(account[1]) > 70"
-                [class.medium]="
-                  getRating(account[1]) > 30 && getRating(account[1]) <= 70
-                "
-                [class.low]="getRating(account[1]) <= 30"
-              >
-                {{ getRating(account[1]) }}
-              </span>
-            </h4>
+          <div class="account-header">
+            <div class="header-content" [routerLink]="['/accounts', account[0]]">
+              @if (account[1].profile?.Name) {
+                <h3>{{ account[1].profile.Name[0] }}</h3>
+              } @else if (getNickname(account[0])) {
+                <h3><em>{{ getNickname(account[0]) }}</em></h3>
+              }
+              <h4 class="address-display" [title]="account[0]">
+                {{ account[0] | address }}
+                <span
+                  class="rating"
+                  [class.high]="getRating(account[1]) > 70"
+                  [class.medium]="getRating(account[1]) > 30 && getRating(account[1]) <= 70"
+                  [class.low]="getRating(account[1]) <= 30"
+                >
+                  {{ getRating(account[1]) }}
+                </span>
+              </h4>
+            </div>
+            <button
+              class="favorite-button"
+              (click)="toggleFavorite(account[0]); $event.stopPropagation()"
+              [class.is-favorite]="isFavorite(account[0])"
+            >
+              {{ isFavorite(account[0]) ? '★' : '☆' }}
+            </button>
           </div>
 
           @if (account[1].profile?.About) {
@@ -223,10 +230,39 @@ interface BSNData {
       }
 
       .account-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
         cursor: pointer;
         padding: 0.5rem;
         margin: -0.5rem;
         border-radius: 8px;
+      }
+
+      .header-content {
+        flex: 1;
+      }
+
+      .favorite-button {
+        padding: 0.5rem;
+        font-size: 1.2rem;
+        background: transparent;
+        border: 2px solid #764ba2;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        color: #764ba2;
+        margin-left: 1rem;
+      }
+
+      .favorite-button.is-favorite {
+        background: #764ba2;
+        color: white;
+      }
+
+      .favorite-button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 2px 8px rgba(118, 75, 162, 0.2);
       }
 
       .account-header h3 {
@@ -442,5 +478,13 @@ export class AccountsListComponent implements OnInit {
       clearTimeout(timeoutId);
       timeoutId = setTimeout(() => fn.apply(this, args), delay);
     };
+  }
+
+  toggleFavorite(address: string) {
+    this.favoritesService.toggleFavorite(address);
+  }
+
+  isFavorite(address: string): boolean {
+    return this.favoritesService.isFavorite(address);
   }
 }
