@@ -6,17 +6,32 @@ import { AddressPipe } from '../pipes/address.pipe';
 import { RouterLink } from '@angular/router';
 import { RatingService } from '../services/rating.service';
 import { FavoritesService } from '../services/favorites.service';
+import { FormsModule } from '@angular/forms';
+import { NicknameService } from '../services/nickname.service';
 
 @Component({
   selector: 'app-account-details',
   standalone: true,
-  imports: [CommonModule, AddressPipe, RouterLink],
+  imports: [CommonModule, AddressPipe, RouterLink, FormsModule],
   template: `
     <div class="account-container" *ngIf="account">
       <header class="account-header">
         <div>
           @if (account.profile?.Name) {
           <h2>{{ account.profile.Name[0] }}</h2>
+          } @else {
+          <div class="nickname-container">
+            <input
+              type="text"
+              [(ngModel)]="nickname"
+              (blur)="saveNickname()"
+              placeholder="Add a nickname..."
+              class="nickname-input"
+            />
+            @if (nickname) {
+              <button class="remove-nickname" (click)="removeNickname()">×</button>
+            }
+          </div>
           }
           <div class="address-display" [title]="address">
             {{ address | address }}
@@ -247,6 +262,48 @@ import { FavoritesService } from '../services/favorites.service';
         font-weight: normal;
         margin-left: 0.5rem;
       }
+      .nickname-container {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+      }
+      
+      .nickname-input {
+        padding: 0.5rem;
+        font-size: 1.2rem;
+        border: 2px solid #eee;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        width: 100%;
+        max-width: 300px;
+      }
+
+      .nickname-input:focus {
+        outline: none;
+        border-color: #764ba2;
+        box-shadow: 0 2px 8px rgba(118, 75, 162, 0.1);
+      }
+
+      .remove-nickname {
+        background: #f44336;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        font-size: 1rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+      }
+
+      .remove-nickname:hover {
+        background: #d32f2f;
+        transform: scale(1.1);
+      }
     `,
   ],
 })
@@ -255,12 +312,14 @@ export class AccountDetailsComponent implements OnInit {
   private dataService = inject(DataService);
   private ratingService = inject(RatingService);
   private favoritesService = inject(FavoritesService);
+  private nicknameService = inject(NicknameService);
 
   address = '';
   account: any = null;
   private accounts: Record<string, any> = {};
 
   data: BSNData | null = null;
+  nickname = '';
 
   constructor() {
     effect(() => {
@@ -273,6 +332,7 @@ export class AccountDetailsComponent implements OnInit {
           // this.address = this.route.snapshot.paramMap.get('address') || '';
           // const data = this.dataService.data();
           this.account = this.data?.accounts?.[this.address];
+          this.nickname = this.nicknameService.getNickname(this.address) || '';
         });
       }
     });
@@ -285,7 +345,9 @@ export class AccountDetailsComponent implements OnInit {
   }
 
   getNameForAddress(address: string): string | null {
-    return this.accounts[address]?.profile?.Name?.[0] || null;
+    return this.accounts[address]?.profile?.Name?.[0] || 
+           this.nicknameService.getNickname(address) ||
+           null;
   }
 
   getRating(): number {
@@ -332,5 +394,16 @@ export class AccountDetailsComponent implements OnInit {
 
   isFavorite(): boolean {
     return this.favoritesService.isFavorite(this.address);
+  }
+
+  saveNickname() {
+    if (this.nickname.trim()) {
+      this.nicknameService.setNickname(this.address, this.nickname.trim());
+    }
+  }
+
+  removeNickname() {
+    this.nickname = '';
+    this.nicknameService.removeNickname(this.address);
   }
 }
