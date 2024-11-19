@@ -107,7 +107,7 @@ interface BSNData {
                 "
                 [class.low]="getRating(account[1]) <= 30"
               >
-                ({{ getRating(account[1]) }})
+                {{ getRating(account[1]) }}
               </span>
             </h4>
           </div>
@@ -239,11 +239,23 @@ interface BSNData {
       }
 
       .rating {
+        font-size: 0.9em;
+        margin-left: 12px;
+        padding: 4px 8px;
+        border-radius: 12px;
         display: inline-block;
-        padding: 0.25rem 0.75rem;
-        border-radius: 999px;
-        font-size: 0.8rem;
-        font-weight: 600;
+      }
+      .rating.high {
+        background: #4caf5022;
+        color: #4caf50;
+      }
+      .rating.medium {
+        background: #ff980022;
+        color: #ff9800;
+      }
+      .rating.low {
+        background: #f4433622;
+        color: #f44336;
       }
 
       .tag-values {

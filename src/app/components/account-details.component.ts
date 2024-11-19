@@ -24,12 +24,12 @@ import { FavoritesService } from '../services/favorites.service';
               [class.medium]="getRating() > 30 && getRating() <= 70"
               [class.low]="getRating() <= 30"
             >
-              Rating: {{ getRating() }}
+              {{ getRating() }}
             </span>
           </div>
         </div>
-        <button 
-          class="favorite-button" 
+        <button
+          class="favorite-button"
           (click)="toggleFavorite()"
           [class.is-favorite]="isFavorite()"
         >
