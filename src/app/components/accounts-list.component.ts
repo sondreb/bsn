@@ -29,8 +29,31 @@ interface BSNData {
       @if (dataService.loading$ | async) {
       <app-loading-spinner />
       } @else {
+      <div class="filters">
+        <div class="filter-group">
+          <label>
+            <input
+              type="radio"
+              name="tagFilter"
+              [value]="'withTags'"
+              [(ngModel)]="tagFilterMode"
+              (change)="filterAccounts()"
+            />
+            With Tags
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="tagFilter"
+              [value]="'withoutTags'"
+              [(ngModel)]="tagFilterMode"
+              (change)="filterAccounts()"
+            />
+            Without Tags
+          </label>
+        </div>
 
-      <!--  <div class="filters">
+        <!--  <div class="filters">
         <h3>Filter by Tag</h3>
         <select [(ngModel)]="selectedTag" (change)="filterByTag()">
           <option value="">All Accounts</option>
@@ -39,6 +62,7 @@ interface BSNData {
           }
         </select>
       </div>-->
+      </div>
 
       <div class="accounts-grid">
         @for (account of filteredAccounts(); track account[0]) {
@@ -70,7 +94,7 @@ interface BSNData {
             <a [href]="website" target="_blank" rel="noopener">{{ website }}</a>
             }
           </div>
-          } @if (account[1].tags) {
+          } @if (account[1].tags && (tagFilterMode === 'withTags')) {
           <div class="tags">
             @for (tagEntry of account[1].tags | keyvalue; track tagEntry.key) {
             <div class="tag">
@@ -105,6 +129,23 @@ interface BSNData {
       }
       .filters {
         margin-bottom: 20px;
+        padding: 15px;
+        background: #f5f5f5;
+        border-radius: 8px;
+      }
+      .filter-group {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 15px;
+      }
+      .filter-group label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+      }
+      .filter-group input[type='radio'] {
+        cursor: pointer;
       }
       .accounts-grid {
         display: grid;
@@ -219,19 +260,37 @@ export class AccountsListComponent implements OnInit {
 
   uniqueTags: string[] = [];
   selectedTag = '';
+  tagFilterMode: 'withTags' | 'withoutTags' = 'withTags';
+
   filteredAccounts = computed(() => {
     const data = this.dataService.data();
     if (!data?.accounts) return [];
 
-    if (this.selectedTag) {
-      return Object.entries(data.accounts)
-        .filter(
-          ([_, account]) => account.tags && this.selectedTag in account.tags
-        )
-        .sort((a, b) => a[0].localeCompare(b[0]));
+    let filtered = Object.entries(data.accounts);
+
+    // Apply tag filter mode
+    switch (this.tagFilterMode) {
+      case 'withTags':
+        filtered = filtered.filter(
+          ([_, account]) => account.tags && Object.keys(account.tags).length > 0
+        );
+        break;
+      case 'withoutTags':
+        filtered = filtered.filter(
+          ([_, account]) =>
+            !account.tags || Object.keys(account.tags).length === 0
+        );
+        break;
     }
 
-    return this.sortAccounts(Object.entries(data.accounts));
+    // Apply selected tag filter if exists
+    if (this.selectedTag) {
+      filtered = filtered.filter(
+        ([_, account]) => account.tags && this.selectedTag in account.tags
+      );
+    }
+
+    return this.sortAccounts(filtered);
   });
 
   constructor() {
@@ -260,6 +319,11 @@ export class AccountsListComponent implements OnInit {
   filterByTag() {
     // Just trigger recomputation by accessing the signal
     this.dataService.data();
+  }
+
+  filterAccounts() {
+    // The computed signal will automatically update based on tagFilterMode
+    // This method exists just to be explicit about the filtering action
   }
 
   private getTagCount(account: any): number {
