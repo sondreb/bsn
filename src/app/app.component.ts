@@ -21,6 +21,7 @@ import { DataService } from './services/data.service';
         <a routerLink="/accounts" routerLinkActive="active">Accounts</a>
         <a routerLink="/tokens" routerLinkActive="active">Known Tokens</a>
         <a routerLink="/volunteers" routerLinkActive="active">Volunteers</a>
+        <a routerLink="/tags" routerLinkActive="active">Tags</a>
       </nav>
 
       <main>
