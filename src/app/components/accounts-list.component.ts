@@ -94,7 +94,7 @@ interface BSNData {
             <a [href]="website" target="_blank" rel="noopener">{{ website }}</a>
             }
           </div>
-          } @if (account[1].tags && (tagFilterMode === 'withTags')) {
+          } @if (account[1].tags && tagFilterMode === 'withTags') {
           <div class="tags">
             @for (tagEntry of account[1].tags | keyvalue; track tagEntry.key) {
             <div class="tag">
@@ -260,28 +260,13 @@ export class AccountsListComponent implements OnInit {
 
   uniqueTags: string[] = [];
   selectedTag = '';
-  tagFilterMode: 'withTags' | 'withoutTags' = 'withTags';
+  tagFilterMode: 'withTags' | 'withoutTags' = 'withoutTags';
 
   filteredAccounts = computed(() => {
     const data = this.dataService.data();
     if (!data?.accounts) return [];
 
     let filtered = Object.entries(data.accounts);
-
-    // Apply tag filter mode
-    switch (this.tagFilterMode) {
-      case 'withTags':
-        filtered = filtered.filter(
-          ([_, account]) => account.tags && Object.keys(account.tags).length > 0
-        );
-        break;
-      case 'withoutTags':
-        filtered = filtered.filter(
-          ([_, account]) =>
-            !account.tags || Object.keys(account.tags).length === 0
-        );
-        break;
-    }
 
     // Apply selected tag filter if exists
     if (this.selectedTag) {
