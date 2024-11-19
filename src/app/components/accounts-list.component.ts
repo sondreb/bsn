@@ -26,6 +26,16 @@ interface BSNData {
   ],
   template: `
     <div class="accounts-container">
+      <div class="search-container">
+        <input
+          type="search"
+          [(ngModel)]="searchQuery"
+          (input)="onSearch()"
+          placeholder="Search accounts by name or description..."
+          class="search-input"
+        />
+      </div>
+
       @if (dataService.loading$ | async) {
       <app-loading-spinner />
       } @else {
@@ -251,6 +261,27 @@ interface BSNData {
         background: #f4433622;
         color: #f44336;
       }
+      .search-container {
+        margin-bottom: 20px;
+      }
+
+      .search-input {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #eee;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.3s ease;
+      }
+
+      .search-input:focus {
+        outline: none;
+        border-color: #764ba2;
+      }
+
+      .search-input::placeholder {
+        color: #999;
+      }
     `,
   ],
 })
@@ -261,6 +292,7 @@ export class AccountsListComponent implements OnInit {
   uniqueTags: string[] = [];
   selectedTag = '';
   tagFilterMode: 'withTags' | 'withoutTags' = 'withoutTags';
+  searchQuery = '';
 
   filteredAccounts = computed(() => {
     const data = this.dataService.data();
@@ -305,6 +337,7 @@ export class AccountsListComponent implements OnInit {
       });
       this.uniqueTags = Array.from(tags).sort();
     });
+    this.onSearch = this.debounce(this.onSearch.bind(this), 300);
   }
 
   async ngOnInit() {
@@ -351,5 +384,17 @@ export class AccountsListComponent implements OnInit {
       return data[1].profile.Name[0];
     }
     return null;
+  }
+
+  onSearch() {
+    this.dataService.setSearchQuery(this.searchQuery);
+  }
+
+  private debounce(fn: Function, delay: number): (...args: any[]) => void {
+    let timeoutId: ReturnType<typeof setTimeout>;
+    return function (this: any, ...args: any[]) {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => fn.apply(this, args), delay);
+    };
   }
 }

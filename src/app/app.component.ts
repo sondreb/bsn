@@ -40,16 +40,6 @@ import { SwUpdate } from '@angular/service-worker';
         <a routerLink="/tags" routerLinkActive="active">Tags</a>
       </nav>
 
-      <div class="search-container">
-        <input
-          type="search"
-          [(ngModel)]="searchQuery"
-          (input)="onSearch()"
-          placeholder="Search accounts by name or description..."
-          class="search-input"
-        />
-      </div>
-
       <main>
         <router-outlet></router-outlet>
       </main>
@@ -146,29 +136,6 @@ import { SwUpdate } from '@angular/service-worker';
       .update-button:hover {
         background: #eee;
       }
-
-      .search-container {
-        margin-bottom: 20px;
-        padding: 0 1rem;
-      }
-
-      .search-input {
-        width: 100%;
-        padding: 12px;
-        border: 2px solid #eee;
-        border-radius: 8px;
-        font-size: 1rem;
-        transition: border-color 0.3s ease;
-      }
-
-      .search-input:focus {
-        outline: none;
-        border-color: #764ba2;
-      }
-
-      .search-input::placeholder {
-        color: #999;
-      }
     `,
   ],
 })
@@ -179,11 +146,8 @@ export class AppComponent implements OnInit {
   deferredPrompt: any;
   showInstallButton = false;
   updateAvailable = false;
-  searchQuery = '';
 
-  constructor() {
-    this.onSearch = this.debounce(this.onSearch.bind(this), 300);
-  }
+  constructor() {}
 
   async ngOnInit() {
     // Load data on app initialization
@@ -244,17 +208,5 @@ export class AppComponent implements OnInit {
       this.showInstallButton = false;
     }
     this.deferredPrompt = null;
-  }
-
-  onSearch() {
-    this.dataService.setSearchQuery(this.searchQuery);
-  }
-
-  private debounce(fn: Function, delay: number): (...args: any[]) => void {
-    let timeoutId: ReturnType<typeof setTimeout>;
-    return function (this: any, ...args: any[]) {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => fn.apply(this, args), delay);
-    };
   }
 }
