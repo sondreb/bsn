@@ -1,4 +1,11 @@
-import { Component, computed, effect, inject, OnInit } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  inject,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DataService } from '../services/data.service';
@@ -7,6 +14,7 @@ import { map } from 'rxjs';
 import { RouterLink } from '@angular/router';
 import { RatingService } from '../services/rating.service';
 import { LoadingSpinnerComponent } from '../shared/loading-spinner.component';
+import { FavoritesService } from '../services/favorites.service';
 
 // Add this interface if it doesn't exist
 interface BSNData {
@@ -47,7 +55,7 @@ interface BSNData {
               name="tagFilter"
               [value]="'withTags'"
               [(ngModel)]="tagFilterMode"
-              (change)="filterAccounts()"
+              (change)="filterByTag()"
             />
             With Tags
           </label>
@@ -57,9 +65,17 @@ interface BSNData {
               name="tagFilter"
               [value]="'withoutTags'"
               [(ngModel)]="tagFilterMode"
-              (change)="filterAccounts()"
+              (change)="filterByTag()"
             />
             Without Tags
+          </label>
+          <label class="favorites-filter">
+            <input
+              type="checkbox"
+              [(ngModel)]="showFavoritesOnly"
+              (change)="filterByTag()"
+            />
+            Favorites Only
           </label>
         </div>
 
@@ -132,182 +148,203 @@ interface BSNData {
       }
     </div>
   `,
-  styles: [`
-    .accounts-container {
-      padding: 1rem;
-    }
+  styles: [
+    `
+      .accounts-container {
+        padding: 1rem;
+      }
 
-    .search-container {
-      margin-bottom: 2rem;
-    }
+      .search-container {
+        margin-bottom: 2rem;
+      }
 
-    .search-input {
-      width: 100%;
-      padding: 1rem;
-      border: 2px solid #eee;
-      border-radius: 12px;
-      font-size: 1rem;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    }
+      .search-input {
+        width: 100%;
+        padding: 1rem;
+        border: 2px solid #eee;
+        border-radius: 12px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      }
 
-    .search-input:focus {
-      outline: none;
-      border-color: #764ba2;
-      box-shadow: 0 4px 12px rgba(118, 75, 162, 0.15);
-    }
+      .search-input:focus {
+        outline: none;
+        border-color: #764ba2;
+        box-shadow: 0 4px 12px rgba(118, 75, 162, 0.15);
+      }
 
-    .filters {
-      background: #f8f9fa;
-      padding: 1.5rem;
-      border-radius: 12px;
-      margin-bottom: 2rem;
-    }
-
-    .filter-group {
-      display: flex;
-      gap: 2rem;
-      flex-wrap: wrap;
-    }
-
-    .filter-group label {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .accounts-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 1.5rem;
-    }
-
-    .account-card {
-      background: white;
-      border-radius: 12px;
-      padding: 1.5rem;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-      transition: all 0.3s ease;
-    }
-
-    .account-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
-    }
-
-    .account-header {
-      cursor: pointer;
-      padding: 0.5rem;
-      margin: -0.5rem;
-      border-radius: 8px;
-    }
-
-    .account-header h3 {
-      margin: 0 0 0.5rem 0;
-      color: #333;
-      font-size: 1.2rem;
-    }
-
-    .address-display {
-      font-family: 'Monaco', 'Consolas', monospace;
-      font-size: 0.9rem;
-      color: #666;
-    }
-
-    .rating {
-      display: inline-block;
-      padding: 0.25rem 0.75rem;
-      border-radius: 999px;
-      font-size: 0.8rem;
-      font-weight: 600;
-    }
-
-    .tag-values {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-top: 1rem;
-    }
-
-    .tag-value {
-      background: #f0f4ff;
-      padding: 0.5rem 1rem;
-      border-radius: 999px;
-      font-size: 0.9rem;
-      text-decoration: none;
-      color: #4a5568;
-      transition: all 0.3s ease;
-    }
-
-    .tag-value:hover {
-      background: #e2e8ff;
-      transform: translateY(-1px);
-    }
-
-    .about {
-      margin: 1rem 0;
-      color: #666;
-      font-size: 0.95rem;
-      line-height: 1.5;
-    }
-
-    @media (max-width: 768px) {
-      .accounts-grid {
-        grid-template-columns: 1fr;
+      .filters {
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
       }
 
       .filter-group {
-        flex-direction: column;
-        gap: 1rem;
+        display: flex;
+        gap: 2rem;
+        flex-wrap: wrap;
       }
-    }
-  `],
+
+      .filter-group label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .favorites-filter {
+        margin-left: auto;
+      }
+
+      .accounts-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 1.5rem;
+      }
+
+      .account-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+      }
+
+      .account-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+      }
+
+      .account-header {
+        cursor: pointer;
+        padding: 0.5rem;
+        margin: -0.5rem;
+        border-radius: 8px;
+      }
+
+      .account-header h3 {
+        margin: 0 0 0.5rem 0;
+        color: #333;
+        font-size: 1.2rem;
+      }
+
+      .address-display {
+        font-family: 'Monaco', 'Consolas', monospace;
+        font-size: 0.9rem;
+        color: #666;
+      }
+
+      .rating {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 999px;
+        font-size: 0.8rem;
+        font-weight: 600;
+      }
+
+      .tag-values {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 1rem;
+      }
+
+      .tag-value {
+        background: #f0f4ff;
+        padding: 0.5rem 1rem;
+        border-radius: 999px;
+        font-size: 0.9rem;
+        text-decoration: none;
+        color: #4a5568;
+        transition: all 0.3s ease;
+      }
+
+      .tag-value:hover {
+        background: #e2e8ff;
+        transform: translateY(-1px);
+      }
+
+      .about {
+        margin: 1rem 0;
+        color: #666;
+        font-size: 0.95rem;
+        line-height: 1.5;
+      }
+
+      @media (max-width: 768px) {
+        .accounts-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .filter-group {
+          flex-direction: column;
+          gap: 1rem;
+        }
+      }
+    `,
+  ],
 })
 export class AccountsListComponent implements OnInit {
   dataService = inject(DataService);
   private ratingService = inject(RatingService);
+  private favoritesService = inject(FavoritesService);
 
   uniqueTags: string[] = [];
   selectedTag = '';
   tagFilterMode: 'withTags' | 'withoutTags' = 'withoutTags';
   searchQuery = '';
+  showFavoritesOnly = false;
+
+  refresh = signal<boolean>(false);
 
   filteredAccounts = computed(() => {
+    const r = this.refresh();
     const data = this.dataService.data();
     if (!data?.accounts) return [];
 
     let filtered = Object.entries(data.accounts);
 
-    // Apply search filter
-    const searchQuery = this.dataService.searchQuery().toLowerCase();
-    if (searchQuery) {
+    // Apply favorites filter first
+    if (this.showFavoritesOnly) {
+      console.log('SHOW FAVORITES ONLY!');
+      filtered = filtered.filter(([address]) =>
+        this.favoritesService.isFavorite(address)
+      );
+    }
+
+    // Apply search filter only if there's a search query
+    const searchQuery = this.dataService.searchQuery().toLowerCase().trim();
+    if (searchQuery.length > 0) {
       filtered = filtered.filter(([address, account]) => {
         const name = account.profile?.Name?.[0]?.toLowerCase() || '';
         const about = account.profile?.About?.[0]?.toLowerCase() || '';
-        
+
         // Check if search query matches start or end of address
         const addressStart = address.slice(0, 4).toLowerCase();
         const addressEnd = address.slice(-4).toLowerCase();
-        const isAddressMatch = searchQuery.length >= 4 && (
-          addressStart.includes(searchQuery.slice(0, 4)) || 
-          addressEnd.includes(searchQuery.slice(-4))
-        );
+        const isAddressMatch =
+          searchQuery.length >= 4 &&
+          (addressStart.includes(searchQuery.slice(0, 4)) ||
+            addressEnd.includes(searchQuery.slice(-4)));
 
-        return name.includes(searchQuery) || 
-               about.includes(searchQuery) || 
-               isAddressMatch;
+        return (
+          name.includes(searchQuery) ||
+          about.includes(searchQuery) ||
+          isAddressMatch
+        );
       });
     }
 
     // Apply selected tag filter if exists
-    if (this.selectedTag) {
-      filtered = filtered.filter(
-        ([_, account]) => account.tags && this.selectedTag in account.tags
-      );
-    }
+    // if (this.selectedTag) {
+    //   filtered = filtered.filter(
+    //     ([_, account]) => account.tags && this.selectedTag in account.tags
+    //   );
+    // }
 
     return this.sortAccounts(filtered);
   });
@@ -338,12 +375,7 @@ export class AccountsListComponent implements OnInit {
 
   filterByTag() {
     // Just trigger recomputation by accessing the signal
-    this.dataService.data();
-  }
-
-  filterAccounts() {
-    // The computed signal will automatically update based on tagFilterMode
-    // This method exists just to be explicit about the filtering action
+    this.refresh.set(!this.refresh());
   }
 
   private getTagCount(account: any): number {

@@ -5,6 +5,7 @@ import { BSNData, DataService } from '../services/data.service';
 import { AddressPipe } from '../pipes/address.pipe';
 import { RouterLink } from '@angular/router';
 import { RatingService } from '../services/rating.service';
+import { FavoritesService } from '../services/favorites.service';
 
 @Component({
   selector: 'app-account-details',
@@ -27,6 +28,13 @@ import { RatingService } from '../services/rating.service';
             </span>
           </div>
         </div>
+        <button 
+          class="favorite-button" 
+          (click)="toggleFavorite()"
+          [class.is-favorite]="isFavorite()"
+        >
+          {{ isFavorite() ? '★' : '☆' }}
+        </button>
       </header>
 
       @if (account.profile) {
@@ -208,6 +216,26 @@ import { RatingService } from '../services/rating.service';
         font-size: 0.9em;
         margin-right: 4px;
       }
+      .favorite-button {
+        padding: 0.5rem 1rem;
+        font-size: 1.5rem;
+        background: transparent;
+        border: 2px solid #764ba2;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        color: #764ba2;
+      }
+
+      .favorite-button.is-favorite {
+        background: #764ba2;
+        color: white;
+      }
+
+      .favorite-button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 2px 8px rgba(118, 75, 162, 0.2);
+      }
     `,
   ],
 })
@@ -215,6 +243,7 @@ export class AccountDetailsComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private dataService = inject(DataService);
   private ratingService = inject(RatingService);
+  private favoritesService = inject(FavoritesService);
 
   address = '';
   account: any = null;
@@ -284,5 +313,13 @@ export class AccountDetailsComponent implements OnInit {
     return Array.from(tagGroups.entries())
       .map(([type, tags]) => ({ type, tags }))
       .sort((a, b) => a.type.localeCompare(b.type));
+  }
+
+  toggleFavorite() {
+    this.favoritesService.toggleFavorite(this.address);
+  }
+
+  isFavorite(): boolean {
+    return this.favoritesService.isFavorite(this.address);
   }
 }
