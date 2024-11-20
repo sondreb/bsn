@@ -45,6 +45,7 @@ import { NicknameService } from '../services/nickname.service';
             >
               {{ getRating() }}
             </span>
+            <button class="edit-button" [routerLink]="['/accounts', address, 'edit']">Edit Profile</button>
           </div>
         </div>
         <button
@@ -305,6 +306,21 @@ import { NicknameService } from '../services/nickname.service';
       .remove-nickname:hover {
         background: #d32f2f;
         transform: scale(1.1);
+      }
+
+      .edit-button {
+        margin-left: 1rem;
+        padding: 4px 12px;
+        background: #764ba2;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.9rem;
+      }
+
+      .edit-button:hover {
+        background: #653991;
       }
     `,
   ],
