@@ -32,8 +32,9 @@ import { FavoritesService } from '../services/favorites.service';
       </header>
 
       <div class="accounts-grid">
-        @for (account of sortedAccounts(); track account.address) {
+        @for (account of sortedAccounts(); track account.address; let i = $index) {
         <div class="account-card">
+          <div class="rank-indicator">#{{i + 1}}</div>
           <div class="account-header">
             <a
               [routerLink]="['/accounts', account.address]"
@@ -98,10 +99,24 @@ import { FavoritesService } from '../services/favorites.service';
       }
 
       .account-card {
+        position: relative;
         background: white;
         border-radius: 8px;
         padding: 15px;
+        padding-top: 30px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .rank-indicator {
+        position: absolute;
+        top: -10px;
+        left: 15px;
+        background: #764ba2;
+        color: white;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 0.8em;
+        font-weight: bold;
       }
 
       .account-header {
