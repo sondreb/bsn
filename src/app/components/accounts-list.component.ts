@@ -95,18 +95,25 @@ interface BSNData {
         @for (account of filteredAccounts(); track account[0]) {
         <div class="account-card">
           <div class="account-header">
-            <div class="header-content" [routerLink]="['/accounts', account[0]]">
+            <div
+              class="header-content"
+              [routerLink]="['/accounts', account[0]]"
+            >
               @if (account[1].profile?.Name) {
-                <h3>{{ account[1].profile.Name[0] }}</h3>
+              <h3>{{ account[1].profile.Name[0] }}</h3>
               } @else if (getNickname(account[0])) {
-                <h3><em>{{ getNickname(account[0]) }}</em></h3>
+              <h3>
+                <em>{{ getNickname(account[0]) }}</em>
+              </h3>
               }
               <h4 class="address-display" [title]="account[0]">
                 {{ account[0] | address }}
                 <span
                   class="rating"
                   [class.high]="getRating(account[1]) > 70"
-                  [class.medium]="getRating(account[1]) > 30 && getRating(account[1]) <= 70"
+                  [class.medium]="
+                    getRating(account[1]) > 30 && getRating(account[1]) <= 70
+                  "
                   [class.low]="getRating(account[1]) <= 30"
                 >
                   {{ getRating(account[1]) }}
@@ -162,6 +169,19 @@ interface BSNData {
     `
       .accounts-container {
         padding: 1rem;
+      }
+
+      .websites {
+        margin-top: 15px;
+      }
+      .websites a {
+        display: block;
+        color: #007bff;
+        text-decoration: none;
+        margin: 5px 0;
+      }
+      .websites a:hover {
+        text-decoration: underline;
       }
 
       .search-container {
@@ -362,7 +382,6 @@ export class AccountsListComponent implements OnInit {
 
     // Apply favorites filter first
     if (this.showFavoritesOnly) {
-      console.log('SHOW FAVORITES ONLY!');
       filtered = filtered.filter(([address]) =>
         this.favoritesService.isFavorite(address)
       );
@@ -457,9 +476,11 @@ export class AccountsListComponent implements OnInit {
   getNameForAddress(address: string): string | null {
     const data = this.filteredAccounts().find(([addr]) => addr === address);
     if (data) {
-      return data[1].profile?.Name?.[0] || 
-             this.nicknameService.getNickname(address) ||
-             null;
+      return (
+        data[1].profile?.Name?.[0] ||
+        this.nicknameService.getNickname(address) ||
+        null
+      );
     }
     return null;
   }
