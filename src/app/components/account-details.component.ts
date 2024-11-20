@@ -84,6 +84,22 @@ import { NicknameService } from '../services/nickname.service';
       </section>
       }
 
+      <div class="external-links">
+        <h4>More insight</h4>
+        <a
+          [href]="'https://stellar.expert/explorer/public/account/' + address"
+          target="_blank"
+          rel="noopener"
+          >Stellar Expert</a
+        >
+        <a
+          [href]="'https://scopuly.com/account/' + address"
+          target="_blank"
+          rel="noopener"
+          >Scopuly</a
+        >
+      </div>
+
       <div class="tags-container">
         @if (account.tags) {
         <section class="tags-section">
@@ -216,6 +232,11 @@ import { NicknameService } from '../services/nickname.service';
       .websites {
         margin-top: 15px;
       }
+
+      .websites h4 {
+        margin: 0;
+      }
+
       .websites a {
         display: block;
         color: #007bff;
@@ -371,6 +392,23 @@ import { NicknameService } from '../services/nickname.service';
 
       .edit-button:hover {
         background: #653991;
+      }
+
+      .external-links h4 {
+        margin: 0;
+      }
+
+      .external-links {
+        margin-top: 15px;
+      }
+      .external-links a {
+        display: inline-block;
+        color: #007bff;
+        text-decoration: none;
+        margin: 5px 15px 5px 0;
+      }
+      .external-links a:hover {
+        text-decoration: underline;
       }
     `,
   ],
