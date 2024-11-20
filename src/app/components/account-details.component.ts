@@ -400,8 +400,9 @@ import { NicknameService } from '../services/nickname.service';
       }
 
       .external-links {
-        margin-top: 15px;
+        margin-bottom: 15px;
       }
+
       .external-links a {
         display: inline-block;
         color: #007bff;
