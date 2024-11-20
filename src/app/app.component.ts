@@ -35,6 +35,7 @@ import { SwUpdate } from '@angular/service-worker';
 
       <nav class="tabs">
         <a routerLink="/accounts" routerLinkActive="active">Accounts</a>
+        <a routerLink="/balances" routerLinkActive="active">Balances</a>
         <a routerLink="/tokens" routerLinkActive="active">Known Tokens</a>
         <a routerLink="/volunteers" routerLinkActive="active">Volunteers</a>
         <a routerLink="/tags" routerLinkActive="active">Tags</a>
