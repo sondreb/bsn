@@ -29,7 +29,9 @@ import { NicknameService } from '../services/nickname.service';
               class="nickname-input"
             />
             @if (nickname) {
-              <button class="remove-nickname" (click)="removeNickname()">×</button>
+            <button class="remove-nickname" (click)="removeNickname()">
+              ×
+            </button>
             }
           </div>
           }
@@ -72,7 +74,7 @@ import { NicknameService } from '../services/nickname.service';
       <div class="tags-container">
         @if (account.tags) {
         <section class="tags-section">
-          <h3>Given Tags</h3>
+          <h3>Outgoing tags</h3>
           @for (tagGroup of getGivenTagGroups(); track tagGroup.type) {
           <div class="tag-group">
             <h4>
@@ -98,7 +100,7 @@ import { NicknameService } from '../services/nickname.service';
         </section>
         } @if (getReceivedTagGroups().length > 0) {
         <section class="tags-section">
-          <h3>Received Tags</h3>
+          <h3>Incoming tags</h3>
           @for (tagGroup of getReceivedTagGroups(); track tagGroup.type) {
           <div class="tag-group">
             <h4>
@@ -268,7 +270,7 @@ import { NicknameService } from '../services/nickname.service';
         gap: 0.5rem;
         margin-bottom: 1rem;
       }
-      
+
       .nickname-input {
         padding: 0.5rem;
         font-size: 1.2rem;
@@ -345,9 +347,11 @@ export class AccountDetailsComponent implements OnInit {
   }
 
   getNameForAddress(address: string): string | null {
-    return this.accounts[address]?.profile?.Name?.[0] || 
-           this.nicknameService.getNickname(address) ||
-           null;
+    return (
+      this.accounts[address]?.profile?.Name?.[0] ||
+      this.nicknameService.getNickname(address) ||
+      null
+    );
   }
 
   getRating(): number {
