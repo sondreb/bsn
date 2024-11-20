@@ -1,5 +1,5 @@
 <div align="center">
-	<img style="border-radius: 20px" src="public/favicon.jpg" width="96">
+	<img style="border-radius: 20px" src="public/favicon.png" width="96">
 	<h1>Blockchain Social Network (BSN)</h1>
 	<h3>An app that explores the social network that exists on Stellar blockchain.</h3>
 	<br>
@@ -8,7 +8,7 @@
 <br>
 <br>
 
-# Dreams
+# Blockchain Social Network (BSN)
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.2.9.
 
@@ -35,7 +35,6 @@ Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To u
 ## Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
-
 
 # Notes
 
