@@ -16,9 +16,8 @@ import { AddressPipe } from '../pipes/address.pipe';
         <div class="sort-controls">
           <label>Sort by:</label>
           <select [(ngModel)]="selectedToken" (change)="updateSort()">
-            <option value="">All Balances</option>
             @for (token of tokenList; track token) {
-            <option [value]="token">{{ token }}</option>
+              <option [value]="token">{{ token }}</option>
             }
           </select>
         </div>
@@ -165,7 +164,7 @@ export class BalancesComponent {
     'USDC',
   ];
 
-  selectedToken = signal<string>('');
+  selectedToken = signal<string>('EURMTL'); // Changed default value
 
   updateSort() {
     this.selectedToken.set(this.selectedToken());
@@ -183,26 +182,11 @@ export class BalancesComponent {
       }))
       .filter((account) => Object.keys(account.balances).length > 0);
 
-    const selectedToken = this.selectedToken();
-
-    if (selectedToken) {
-      return accounts.sort((a, b) => {
-        const balanceA = Number(a.balances[selectedToken] || 0);
-        const balanceB = Number(b.balances[selectedToken] || 0);
-        return balanceB - balanceA; // Sort in descending order
-      });
-    }
-
+    // Always sort by selected token, removed the conditional
     return accounts.sort((a, b) => {
-      const totalA = Object.values(a.balances).reduce(
-        (sum: number, val) => sum + Number(val),
-        0
-      );
-      const totalB = Object.values(b.balances).reduce(
-        (sum: number, val) => sum + Number(val),
-        0
-      );
-      return totalB - totalA;
+      const balanceA = Number(a.balances[this.selectedToken()] || 0);
+      const balanceB = Number(b.balances[this.selectedToken()] || 0);
+      return balanceB - balanceA; // Sort in descending order
     });
   });
 
