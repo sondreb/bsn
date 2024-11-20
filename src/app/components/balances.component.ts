@@ -39,12 +39,9 @@ import { AddressPipe } from '../pipes/address.pipe';
           </div>
           <div class="balances-grid">
             @for (balance of account.balances | keyvalue; track balance.key) {
-            <div class="balance-item">
+            <div class="balance-item" [class.highlighted]="balance.key === selectedToken()">
               <span class="token">{{ balance.key }}</span>
-              <span
-                class="amount"
-                [class.highlighted]="balance.key === selectedToken"
-              >
+              <span class="amount">
                 {{ formatBalance(balance.value) }}
               </span>
             </div>
@@ -132,6 +129,24 @@ import { AddressPipe } from '../pipes/address.pipe';
         flex-direction: column;
         align-items: center;
         gap: 4px;
+        transition: all 0.3s ease;
+      }
+
+      .balance-item.highlighted {
+        background: #764ba222;
+        border: 1px solid #764ba244;
+        transform: scale(1.05);
+        box-shadow: 0 2px 8px rgba(118, 75, 162, 0.1);
+      }
+
+      .balance-item.highlighted .token {
+        color: #764ba2;
+        font-weight: 600;
+      }
+
+      .balance-item.highlighted .amount {
+        color: #764ba2;
+        font-weight: 600;
       }
 
       .token {
