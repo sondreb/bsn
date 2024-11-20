@@ -138,16 +138,17 @@ import { NicknameService } from '../services/nickname.service';
             </h4>
             <div class="tag-values">
               @for (tag of tagGroup.tags; track tag.fromAddress) {
-              <span class="tag-value">
-                <a [routerLink]="['/accounts', tag.fromAddress]">
-                  {{ tag.fromAddress | address }}
-                  @if (getNameForAddress(tag.fromAddress)) {
-                  <span class="tag-name"
-                    >[{{ getNameForAddress(tag.fromAddress) }}]</span
-                  >
-                  }
-                </a>
-              </span>
+              <a
+                class="tag-value"
+                [routerLink]="['/accounts', tag.fromAddress]"
+              >
+                {{ tag.fromAddress | address }}
+                @if (getNameForAddress(tag.fromAddress)) {
+                <span class="tag-name"
+                  >[{{ getNameForAddress(tag.fromAddress) }}]</span
+                >
+                }
+              </a>
               }
             </div>
           </div>
