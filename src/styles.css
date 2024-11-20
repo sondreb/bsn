@@ -25,7 +25,7 @@ button {
     "Helvetica Neue", Arial, sans-serif;
 }
 
-[title] {
+/* [title] {
   position: relative;
 }
 
@@ -43,7 +43,7 @@ button {
   white-space: nowrap;
   z-index: 1000;
   pointer-events: none;
-}
+} */
 
 .tag-value[title]:hover::after {
   bottom: auto;
