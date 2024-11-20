@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { DataService } from '../services/data.service';
 import { RouterLink } from '@angular/router';
 import { AddressPipe } from '../pipes/address.pipe';
+import { FavoritesService } from '../services/favorites.service';
 
 @Component({
-    selector: 'app-balances',
-    imports: [CommonModule, FormsModule, RouterLink, AddressPipe],
-    template: `
+  selector: 'app-balances',
+  imports: [CommonModule, FormsModule, RouterLink, AddressPipe],
+  template: `
     <div class="balances-container">
       <header>
         <h2>Account Balances</h2>
@@ -16,9 +17,17 @@ import { AddressPipe } from '../pipes/address.pipe';
           <label>Sort by:</label>
           <select [(ngModel)]="selectedToken" (change)="updateSort()">
             @for (token of tokenList; track token) {
-              <option [value]="token">{{ token }}</option>
+            <option [value]="token">{{ token }}</option>
             }
           </select>
+          <label class="favorites-filter">
+            <input
+              type="checkbox"
+              [ngModel]="showFavoritesOnly()"
+              (ngModelChange)="toggleFavoritesOnly($event)"
+            />
+            Show Favorites Only
+          </label>
         </div>
       </header>
 
@@ -38,7 +47,10 @@ import { AddressPipe } from '../pipes/address.pipe';
           </div>
           <div class="balances-grid">
             @for (balance of account.balances | keyvalue; track balance.key) {
-            <div class="balance-item" [class.highlighted]="balance.key === selectedToken()">
+            <div
+              class="balance-item"
+              [class.highlighted]="balance.key === selectedToken()"
+            >
               <span class="token">{{ balance.key }}</span>
               <span class="amount">
                 {{ formatBalance(balance.value) }}
@@ -51,8 +63,8 @@ import { AddressPipe } from '../pipes/address.pipe';
       </div>
     </div>
   `,
-    styles: [
-        `
+  styles: [
+    `
       .balances-container {
         padding: 20px;
         max-width: 1200px;
@@ -161,11 +173,20 @@ import { AddressPipe } from '../pipes/address.pipe';
         color: #764ba2;
         font-weight: 600;
       }
+
+      .favorites-filter {
+        margin-left: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+      }
     `,
-    ]
+  ],
 })
 export class BalancesComponent {
   private dataService = inject(DataService);
+  private favoritesService = inject(FavoritesService);
 
   tokenList = [
     'EURMTL',
@@ -179,6 +200,9 @@ export class BalancesComponent {
   ];
 
   selectedToken = signal<string>('EURMTL'); // Changed default value
+  showFavoritesOnly = signal<boolean>(
+    this.favoritesService.getBalancesFavoritesOnly()
+  );
 
   updateSort() {
     this.selectedToken.set(this.selectedToken());
@@ -188,7 +212,7 @@ export class BalancesComponent {
     const data = this.dataService.data();
     if (!data?.accounts) return [];
 
-    const accounts = Object.entries(data.accounts)
+    let accounts = Object.entries(data.accounts)
       .map(([address, account]) => ({
         address,
         name: account.profile?.Name?.[0],
@@ -196,13 +220,24 @@ export class BalancesComponent {
       }))
       .filter((account) => Object.keys(account.balances).length > 0);
 
-    // Always sort by selected token, removed the conditional
+    // Filter by favorites if enabled
+    if (this.showFavoritesOnly()) {
+      accounts = accounts.filter((account) =>
+        this.favoritesService.isFavorite(account.address)
+      );
+    }
+
     return accounts.sort((a, b) => {
       const balanceA = Number(a.balances[this.selectedToken()] || 0);
       const balanceB = Number(b.balances[this.selectedToken()] || 0);
       return balanceB - balanceA; // Sort in descending order
     });
   });
+
+  toggleFavoritesOnly(value: boolean) {
+    this.showFavoritesOnly.set(value);
+    this.favoritesService.setBalancesFavoritesOnly(value);
+  }
 
   formatBalance(value: string | number | any): string {
     if (value === undefined) {

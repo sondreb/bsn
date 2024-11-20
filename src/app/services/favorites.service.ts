@@ -6,6 +6,7 @@ import { Injectable, signal } from '@angular/core';
 export class FavoritesService {
   private readonly FAVORITES_KEY = 'bsn-favorites';
   private readonly FILTER_KEY = 'bsn-favorites-filter';
+  private readonly BALANCES_FAVORITES_FILTER_KEY = 'bsn-balances-favorites-filter';
   private favorites = signal<Set<string>>(new Set());
   private showFavoritesOnly = signal<boolean>(false);
 
@@ -76,5 +77,13 @@ export class FavoritesService {
 
   getShowFavoritesOnly(): boolean {
     return this.showFavoritesOnly();
+  }
+
+  getBalancesFavoritesOnly(): boolean {
+    return localStorage.getItem(this.BALANCES_FAVORITES_FILTER_KEY) === 'true';
+  }
+
+  setBalancesFavoritesOnly(value: boolean): void {
+    localStorage.setItem(this.BALANCES_FAVORITES_FILTER_KEY, value.toString());
   }
 }
