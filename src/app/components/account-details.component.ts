@@ -100,6 +100,20 @@ import { NicknameService } from '../services/nickname.service';
         >
       </div>
 
+      @if (account.balances) {
+      <section class="balances-section">
+        <h3>Account Balances</h3>
+        <div class="balances-grid">
+          @for (balance of getBalances(); track balance.asset) {
+          <div class="balance-item">
+            <span class="asset-code">{{ balance.asset }}</span>
+            <span class="balance-amount">{{ balance.amount }}</span>
+          </div>
+          }
+        </div>
+      </section>
+      }
+
       <div class="tags-container">
         @if (account.tags) {
         <section class="tags-section">
@@ -412,6 +426,44 @@ import { NicknameService } from '../services/nickname.service';
       .external-links a:hover {
         text-decoration: underline;
       }
+
+      .balances-section {
+        background: #f8f8f8;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+      }
+
+      .balances-section h3 {
+        margin-top: 0;
+        margin-bottom: 15px;
+      }
+
+      .balances-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 12px;
+      }
+
+      .balance-item {
+        background: white;
+        padding: 12px;
+        border-radius: 6px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      }
+
+      .asset-code {
+        font-weight: 500;
+        color: #333;
+      }
+
+      .balance-amount {
+        font-family: monospace;
+        color: #007bff;
+      }
     `,
   ],
 })
@@ -497,6 +549,18 @@ export class AccountDetailsComponent implements OnInit {
     return Array.from(tagGroups.entries())
       .map(([type, tags]) => ({ type, tags }))
       .sort((a, b) => a.type.localeCompare(b.type));
+  }
+
+  getBalances() {
+    if (!this.account?.balances) return [];
+    
+    return Object.entries(this.account.balances).map(([asset, amount]) => ({
+      asset: asset === 'native' ? 'XLM' : asset,
+      amount: Number(amount).toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 7
+      })
+    }));
   }
 
   toggleFavorite() {
