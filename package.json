@@ -6,7 +6,7 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "deploy": "ng deploy --repo=https://github.com/sondreb/bsn.git --cname=bsn.brainbox.no --name=SondreB --email=sondre@outlook.com",
+    "deploy": "ng deploy --repo=https://github.com/sondreb/bsn.git --cname=bsn.brainbox.no --name=SondreB --email=sondre@outlook.com --dir=dist/app",
     "test": "ng test"
   },
   "private": true,
