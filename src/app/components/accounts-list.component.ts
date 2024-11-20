@@ -24,16 +24,15 @@ interface BSNData {
 }
 
 @Component({
-  selector: 'app-accounts-list',
-  standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    AddressPipe,
-    RouterLink,
-    LoadingSpinnerComponent,
-  ],
-  template: `
+    selector: 'app-accounts-list',
+    imports: [
+        CommonModule,
+        FormsModule,
+        AddressPipe,
+        RouterLink,
+        LoadingSpinnerComponent,
+    ],
+    template: `
     <div class="accounts-container">
       <div class="search-container">
         <input
@@ -165,8 +164,8 @@ interface BSNData {
       }
     </div>
   `,
-  styles: [
-    `
+    styles: [
+        `
       .accounts-container {
         padding: 1rem;
       }
@@ -357,7 +356,7 @@ interface BSNData {
         }
       }
     `,
-  ],
+    ]
 })
 export class AccountsListComponent implements OnInit {
   dataService = inject(DataService);

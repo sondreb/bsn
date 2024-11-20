@@ -4,10 +4,9 @@ import { DataService } from '../services/data.service';
 import { AddressPipe } from '../pipes/address.pipe';
 
 @Component({
-  selector: 'app-known-tokens',
-  standalone: true,
-  imports: [CommonModule, AddressPipe],
-  template: `
+    selector: 'app-known-tokens',
+    imports: [CommonModule, AddressPipe],
+    template: `
     <div class="tokens-container">
       <h2>Known Tokens</h2>
       <div class="token-grid">
@@ -22,8 +21,8 @@ import { AddressPipe } from '../pipes/address.pipe';
       </div>
     </div>
   `,
-  styles: [
-    `
+    styles: [
+        `
       .tokens-container {
         padding: 20px;
       }
@@ -48,7 +47,7 @@ import { AddressPipe } from '../pipes/address.pipe';
         color: #666;
       }
     `,
-  ],
+    ]
 })
 export class KnownTokensComponent implements OnInit {
   dataService = inject(DataService);

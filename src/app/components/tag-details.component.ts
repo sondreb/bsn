@@ -6,10 +6,9 @@ import { AddressPipe } from '../pipes/address.pipe';
 import { RouterLink } from '@angular/router';
 
 @Component({
-  selector: 'app-tag-details',
-  standalone: true,
-  imports: [CommonModule, AddressPipe, RouterLink],
-  template: `
+    selector: 'app-tag-details',
+    imports: [CommonModule, AddressPipe, RouterLink],
+    template: `
     <div class="tag-details-container">
       <h2>Tag: {{ tagName }}</h2>
 
@@ -40,8 +39,8 @@ import { RouterLink } from '@angular/router';
       </div>
     </div>
   `,
-  styles: [
-    `
+    styles: [
+        `
       .tag-details-container {
         padding: 20px;
         max-width: 1200px;
@@ -80,7 +79,7 @@ import { RouterLink } from '@angular/router';
         border-bottom: 1px solid #ddd;
       }
     `,
-  ],
+    ]
 })
 export class TagDetailsComponent implements OnInit {
   private route = inject(ActivatedRoute);

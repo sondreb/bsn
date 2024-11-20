@@ -16,10 +16,9 @@ interface VolunteerProgram {
 }
 
 @Component({
-  selector: 'app-volunteers',
-  standalone: true,
-  imports: [CommonModule, AddressPipe, RouterLink],
-  template: `
+    selector: 'app-volunteers',
+    imports: [CommonModule, AddressPipe, RouterLink],
+    template: `
     <div class="volunteers-container">
       <h2>Volunteer Programs</h2>
       <div class="volunteer-list">
@@ -63,8 +62,8 @@ interface VolunteerProgram {
       </div>
     </div>
   `,
-  styles: [
-    `
+    styles: [
+        `
       .volunteers-container {
         padding: 20px;
       }
@@ -132,7 +131,7 @@ interface VolunteerProgram {
         border-radius: 4px;
       }
     `,
-  ],
+    ]
 })
 export class VolunteersComponent implements OnInit {
   dataService = inject(DataService);

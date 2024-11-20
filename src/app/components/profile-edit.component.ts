@@ -8,10 +8,9 @@ import { AddressPipe } from '../pipes/address.pipe';
 import * as StellarSdk from '@stellar/stellar-sdk';
 
 @Component({
-  selector: 'app-profile-edit',
-  standalone: true,
-  imports: [CommonModule, FormsModule, AddressPipe],
-  template: `
+    selector: 'app-profile-edit',
+    imports: [CommonModule, FormsModule, AddressPipe],
+    template: `
     <div class="edit-container">
       <h2>Edit Profile for {{ address | address }}</h2>
 
@@ -97,8 +96,8 @@ import * as StellarSdk from '@stellar/stellar-sdk';
       }
     </div>
   `,
-  styles: [
-    `
+    styles: [
+        `
       .edit-container {
         max-width: 800px;
         margin: 0 auto;
@@ -219,7 +218,7 @@ import * as StellarSdk from '@stellar/stellar-sdk';
         background: #653991;
       }
     `,
-  ],
+    ]
 })
 export class ProfileEditComponent implements OnInit {
   private route = inject(ActivatedRoute);

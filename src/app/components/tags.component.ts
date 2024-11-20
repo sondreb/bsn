@@ -9,10 +9,9 @@ interface TagStats {
 }
 
 @Component({
-  selector: 'app-tags',
-  standalone: true,
-  imports: [CommonModule, RouterLink],
-  template: `
+    selector: 'app-tags',
+    imports: [CommonModule, RouterLink],
+    template: `
     <div class="tags-container">
       <h2>Tags Overview</h2>
       <div class="tags-grid">
@@ -25,7 +24,7 @@ interface TagStats {
       </div>
     </div>
   `,
-  styles: [`
+    styles: [`
     .tags-container {
       padding: 20px;
     }

@@ -6,16 +6,15 @@ import { DataService } from './services/data.service';
 import { SwUpdate } from '@angular/service-worker';
 
 @Component({
-  selector: 'app-root',
-  standalone: true,
-  imports: [
-    RouterOutlet,
-    RouterLink,
-    RouterLinkActive,
-    CommonModule,
-    FormsModule,
-  ],
-  template: `
+    selector: 'app-root',
+    imports: [
+        RouterOutlet,
+        RouterLink,
+        RouterLinkActive,
+        CommonModule,
+        FormsModule,
+    ],
+    template: `
     <div class="app-container">
       <header>
         <h1>Blockchain Social Network</h1>
@@ -46,8 +45,8 @@ import { SwUpdate } from '@angular/service-worker';
       </main>
     </div>
   `,
-  styles: [
-    `
+    styles: [
+        `
       :host {
         display: block;
         min-height: 100vh;
@@ -194,7 +193,7 @@ import { SwUpdate } from '@angular/service-worker';
         }
       }
     `,
-  ],
+    ]
 })
 export class AppComponent implements OnInit {
   private dataService = inject(DataService);

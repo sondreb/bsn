@@ -6,10 +6,9 @@ import { RouterLink } from '@angular/router';
 import { AddressPipe } from '../pipes/address.pipe';
 
 @Component({
-  selector: 'app-balances',
-  standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, AddressPipe],
-  template: `
+    selector: 'app-balances',
+    imports: [CommonModule, FormsModule, RouterLink, AddressPipe],
+    template: `
     <div class="balances-container">
       <header>
         <h2>Account Balances</h2>
@@ -52,8 +51,8 @@ import { AddressPipe } from '../pipes/address.pipe';
       </div>
     </div>
   `,
-  styles: [
-    `
+    styles: [
+        `
       .balances-container {
         padding: 20px;
         max-width: 1200px;
@@ -163,7 +162,7 @@ import { AddressPipe } from '../pipes/address.pipe';
         font-weight: 600;
       }
     `,
-  ],
+    ]
 })
 export class BalancesComponent {
   private dataService = inject(DataService);

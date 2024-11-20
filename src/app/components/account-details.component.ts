@@ -10,10 +10,9 @@ import { FormsModule } from '@angular/forms';
 import { NicknameService } from '../services/nickname.service';
 
 @Component({
-  selector: 'app-account-details',
-  standalone: true,
-  imports: [CommonModule, AddressPipe, RouterLink, FormsModule],
-  template: `
+    selector: 'app-account-details',
+    imports: [CommonModule, AddressPipe, RouterLink, FormsModule],
+    template: `
     <div class="account-container" *ngIf="account">
       <header class="account-header">
         <div>
@@ -129,8 +128,8 @@ import { NicknameService } from '../services/nickname.service';
       </div>
     </div>
   `,
-  styles: [
-    `
+    styles: [
+        `
       .account-container {
         padding: 20px;
         max-width: 800px;
@@ -323,7 +322,7 @@ import { NicknameService } from '../services/nickname.service';
         background: #653991;
       }
     `,
-  ],
+    ]
 })
 export class AccountDetailsComponent implements OnInit {
   private route = inject(ActivatedRoute);
