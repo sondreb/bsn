@@ -10,9 +10,9 @@ import { FormsModule } from '@angular/forms';
 import { NicknameService } from '../services/nickname.service';
 
 @Component({
-    selector: 'app-account-details',
-    imports: [CommonModule, AddressPipe, RouterLink, FormsModule],
-    template: `
+  selector: 'app-account-details',
+  imports: [CommonModule, AddressPipe, RouterLink, FormsModule],
+  template: `
     <div class="account-container" *ngIf="account">
       <header class="account-header">
         <div>
@@ -34,8 +34,16 @@ import { NicknameService } from '../services/nickname.service';
             }
           </div>
           }
-          <div class="address-display" [title]="address">
-            {{ address | address }}
+          <div
+            class="address-display"
+            [title]="'Click to copy: ' + address"
+            (click)="copyToClipboard(address)"
+          >
+            <span class="address-text">{{ address | address }}</span>
+            <span class="copy-icon">📋</span>
+            @if (showCopiedMessage) {
+            <span class="copied-message">Copied!</span>
+            }
             <span
               class="rating"
               [class.high]="getRating() > 70"
@@ -44,7 +52,12 @@ import { NicknameService } from '../services/nickname.service';
             >
               {{ getRating() }}
             </span>
-            <button class="edit-button" [routerLink]="['/accounts', address, 'edit']">Edit Profile</button>
+            <button
+              class="edit-button"
+              [routerLink]="['/accounts', address, 'edit']"
+            >
+              Edit Profile
+            </button>
           </div>
         </div>
         <button
@@ -128,8 +141,8 @@ import { NicknameService } from '../services/nickname.service';
       </div>
     </div>
   `,
-    styles: [
-        `
+  styles: [
+    `
       .account-container {
         padding: 20px;
         max-width: 800px;
@@ -148,11 +161,49 @@ import { NicknameService } from '../services/nickname.service';
         padding: 4px 8px;
         background: #f5f5f5;
         border-radius: 4px;
-        cursor: help;
+        cursor: pointer;
         transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        position: relative;
       }
       .address-display:hover {
         background: #e0e0e0;
+      }
+      .address-text {
+        flex: 1;
+      }
+      .copy-icon {
+        font-size: 0.9em;
+        opacity: 0.6;
+      }
+      .address-display:hover .copy-icon {
+        opacity: 1;
+      }
+      .copied-message {
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.8em;
+        pointer-events: none;
+        animation: fadeOut 1.5s forwards;
+      }
+      @keyframes fadeOut {
+        0% {
+          opacity: 1;
+        }
+        70% {
+          opacity: 1;
+        }
+        100% {
+          opacity: 0;
+        }
       }
       .profile-section {
         margin-bottom: 30px;
@@ -322,7 +373,7 @@ import { NicknameService } from '../services/nickname.service';
         background: #653991;
       }
     `,
-    ]
+  ],
 })
 export class AccountDetailsComponent implements OnInit {
   private route = inject(ActivatedRoute);
@@ -337,6 +388,7 @@ export class AccountDetailsComponent implements OnInit {
 
   data: BSNData | null = null;
   nickname = '';
+  showCopiedMessage = false;
 
   constructor() {
     effect(() => {
@@ -424,5 +476,17 @@ export class AccountDetailsComponent implements OnInit {
   removeNickname() {
     this.nickname = '';
     this.nicknameService.removeNickname(this.address);
+  }
+
+  async copyToClipboard(text: string) {
+    try {
+      await navigator.clipboard.writeText(text);
+      this.showCopiedMessage = true;
+      setTimeout(() => {
+        this.showCopiedMessage = false;
+      }, 1500);
+    } catch (err) {
+      console.error('Failed to copy text: ', err);
+    }
   }
 }
