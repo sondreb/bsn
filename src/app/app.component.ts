@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DataService } from './services/data.service';
 import { SwUpdate } from '@angular/service-worker';
+import { ThemeService } from './services/theme.service';
 
 @Component({
     selector: 'app-root',
@@ -18,13 +19,34 @@ import { SwUpdate } from '@angular/service-worker';
     <div class="app-container">
       <header>
         <h1>Blockchain Social Network</h1>
-        <button
-          *ngIf="showInstallButton"
-          (click)="installPwa()"
-          class="install-button"
-        >
-          Install App
-        </button>
+        <div class="header-actions">
+          <button 
+            class="theme-toggle" 
+            (click)="toggleTheme()" 
+            [attr.aria-label]="themeService.isDarkMode() ? 'Switch to light mode' : 'Switch to dark mode'"
+            title="Toggle theme"
+          >
+            <svg *ngIf="themeService.isDarkMode()" viewBox="0 0 24 24" fill="currentColor">
+              <!-- Moon icon -->
+              <path d="M12 11.807C10.7418 10.5483 9.88488 8.94484 9.53762 7.1993C9.19037 5.45375 9.36832 3.64444 10.049 2C8.10826 2.38205 6.3256 3.33431 4.92899 4.735C1.02399 8.64 1.02399 14.972 4.92899 18.877C8.83499 22.783 15.166 22.782 19.072 18.877C20.4723 17.4805 21.4245 15.6983 21.807 13.758C20.1625 14.4385 18.3533 14.6164 16.6077 14.2692C14.8622 13.9219 13.2588 13.0651 12 11.807V11.807Z"/>
+            
+            
+            </svg>
+            <svg *ngIf="!themeService.isDarkMode()" viewBox="0 0 24 24" fill="currentColor">
+            
+            <!-- Sun icon -->
+            <path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9-4.03-9-9-9zm0 16c-3.86 0-7-3.14-7-7s3.14-7 7-7 7 3.14 7 7-3.14 7-7 7z"/>
+              <path d="M12 6c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm0 10c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z"/>
+            </svg>
+          </button>
+          <button
+            *ngIf="showInstallButton"
+            (click)="installPwa()"
+            class="install-button"
+          >
+            Install App
+          </button>
+        </div>
       </header>
 
       <div *ngIf="updateAvailable" class="update-banner">
@@ -50,7 +72,7 @@ import { SwUpdate } from '@angular/service-worker';
       :host {
         display: block;
         min-height: 100vh;
-        background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+        background: var(--background);
       }
 
       .app-container {
@@ -65,15 +87,21 @@ import { SwUpdate } from '@angular/service-worker';
         align-items: center;
         margin-bottom: 2rem;
         padding: 1.5rem;
-        background: white;
+        background: var(--card-bg);
         border-radius: 12px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        box-shadow: var(--card-shadow);
+      }
+
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
       }
 
       header h1 {
         margin: 0;
         font-size: 2rem;
-        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        background: var(--accent-gradient);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         font-weight: 700;
@@ -81,7 +109,7 @@ import { SwUpdate } from '@angular/service-worker';
 
       .install-button {
         padding: 0.75rem 1.5rem;
-        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        background: var(--accent-gradient);
         color: white;
         border: none;
         border-radius: 8px;
@@ -100,18 +128,18 @@ import { SwUpdate } from '@angular/service-worker';
       .tabs {
         display: flex;
         gap: 0.5rem;
-        background: white;
+        background: var(--card-bg);
         padding: 0.5rem;
         margin-bottom: 2rem;
         border-radius: 12px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        box-shadow: var(--card-shadow);
       }
 
       .tabs a {
         padding: 1rem 1.5rem;
         border-radius: 8px;
         text-decoration: none;
-        color: #666;
+        color: var(--text-secondary);
         font-weight: 500;
         flex: 1;
         text-align: center;
@@ -119,20 +147,20 @@ import { SwUpdate } from '@angular/service-worker';
       }
 
       .tabs a.active {
-        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        background: var(--accent-gradient);
         color: white;
         font-weight: 600;
       }
 
       .tabs a:hover:not(.active) {
-        background: #f5f7fa;
-        color: #764ba2;
+        background: rgba(128, 128, 128, 0.1);
+        color: var(--text-primary);
       }
 
       main {
-        background: white;
+        background: var(--card-bg);
         border-radius: 12px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        box-shadow: var(--card-shadow);
         padding: 2rem;
         min-height: calc(100vh - 200px);
       }
@@ -183,6 +211,10 @@ import { SwUpdate } from '@angular/service-worker';
           text-align: center;
         }
 
+        .header-actions {
+          justify-content: center;
+        }
+
         .tabs {
           flex-direction: column;
           gap: 0.25rem;
@@ -199,6 +231,7 @@ export class AppComponent implements OnInit {
   private dataService = inject(DataService);
   private swUpdate = inject(SwUpdate);
   private router = inject(Router);
+  public themeService = inject(ThemeService);
 
   deferredPrompt: any;
   showInstallButton = false;
@@ -275,5 +308,12 @@ export class AppComponent implements OnInit {
       this.showInstallButton = false;
     }
     this.deferredPrompt = null;
+  }
+  
+  /**
+   * Toggle between light and dark themes
+   */
+  toggleTheme(): void {
+    this.themeService.toggleTheme();
   }
 }
