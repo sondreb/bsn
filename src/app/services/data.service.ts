@@ -11,7 +11,7 @@ export interface BSNData {
   providedIn: 'root',
 })
 export class DataService {
-  private readonly API_URL = 'https://bsn.mtla.me/json';
+  private readonly API_URL = 'https://bsn.expert/json';
   private readonly _searchQuery = signal('');
 
   loading$ = new BehaviorSubject<boolean>(false);
