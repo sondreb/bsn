@@ -185,25 +185,29 @@ import { NicknameService } from '../services/nickname.service';
         align-items: center;
         margin-bottom: 20px;
         padding-bottom: 10px;
-        border-bottom: 1px solid #eee;
+        border-bottom: 2px solid var(--border-color-light);
       }
       .address-display {
         font-family: monospace;
-        padding: 4px 8px;
-        background: #f5f5f5;
-        border-radius: 4px;
+        padding: 8px 12px;
+        background: var(--card-bg-tertiary);
+        border-radius: var(--border-radius-sm);
         cursor: pointer;
-        transition: all 0.3s ease;
+        transition: all var(--transition-duration) ease;
         display: flex;
         align-items: center;
         gap: 8px;
         position: relative;
+        border: 1px solid var(--border-color-light);
       }
       .address-display:hover {
-        background: #e0e0e0;
+        background: var(--hover-bg);
+        border-color: var(--accent-color);
+        box-shadow: 0 2px 8px var(--accent-light);
       }
       .address-text {
         flex: 1;
+        color: var(--text-primary);
       }
       .copy-icon {
         font-size: 0.9em;
@@ -217,13 +221,14 @@ import { NicknameService } from '../services/nickname.service';
         bottom: 100%;
         left: 50%;
         transform: translateX(-50%);
-        background: rgba(0, 0, 0, 0.8);
+        background: var(--accent-color);
         color: white;
-        padding: 4px 8px;
-        border-radius: 4px;
-        font-size: 0.8em;
+        padding: 6px 12px;
+        border-radius: var(--border-radius-sm);
+        font-size: 0.85em;
         pointer-events: none;
         animation: fadeOut 1.5s forwards;
+        box-shadow: 0 2px 8px var(--accent-light);
       }
       @keyframes fadeOut {
         0% {
@@ -240,38 +245,48 @@ import { NicknameService } from '../services/nickname.service';
         margin-bottom: 30px;
       }
       .about {
-        color: #666;
+        color: var(--text-secondary);
         font-style: italic;
         margin: 10px 0;
+        line-height: 1.6;
       }
       .websites {
         margin-top: 15px;
       }
 
       .websites h4 {
-        margin: 0;
+        margin: 0 0 8px 0;
+        color: var(--text-primary);
       }
 
       .websites a {
         display: block;
-        color: #007bff;
+        color: var(--link-color);
         text-decoration: none;
         margin: 5px 0;
+        transition: color var(--transition-duration) ease;
       }
       .websites a:hover {
+        color: var(--link-hover);
         text-decoration: underline;
       }
       .tags-section {
-        background: #f8f8f8;
+        background: var(--card-bg-secondary);
         padding: 20px;
-        border-radius: 8px;
+        border-radius: var(--border-radius-md);
+        border: 1px solid var(--border-color-light);
       }
+
+      .tags-section h3 {
+        color: var(--text-primary);
+      }
+
       .tag-group {
         margin-bottom: 20px;
       }
       .tag-group h4 {
         margin-bottom: 10px;
-        color: #666;
+        color: var(--text-secondary);
       }
       .tag-values {
         display: flex;
@@ -279,23 +294,27 @@ import { NicknameService } from '../services/nickname.service';
         gap: 8px;
       }
       .tag-value {
-        background: #007bff22;
-        padding: 4px 8px;
-        border-radius: 4px;
+        background: var(--tag-bg);
+        padding: 6px 12px;
+        border-radius: 999px;
         font-size: 0.9em;
         cursor: pointer;
         text-decoration: none;
-        color: inherit;
+        color: var(--tag-text);
         display: inline-flex;
         align-items: center;
+        transition: all var(--transition-duration) ease;
+        border: 1px solid transparent;
       }
       .tag-value:hover {
-        background: #007bff33;
+        background: var(--tag-hover);
+        border-color: var(--accent-color);
+        transform: translateY(-2px);
+        box-shadow: 0 2px 8px var(--accent-light);
       }
       .tag-name {
         margin-left: 4px;
-        color: #666;
-        font-size: 0.9em;
+        opacity: 0.8;
       }
       .rating {
         font-size: 0.9em;
@@ -303,17 +322,18 @@ import { NicknameService } from '../services/nickname.service';
         padding: 4px 8px;
         border-radius: 12px;
         display: inline-block;
+        font-weight: 600;
       }
       .rating.high {
-        background: #4caf5022;
+        background: rgba(76, 175, 80, 0.15);
         color: #4caf50;
       }
       .rating.medium {
-        background: #ff980022;
+        background: rgba(255, 152, 0, 0.15);
         color: #ff9800;
       }
       .rating.low {
-        background: #f4433622;
+        background: rgba(244, 67, 54, 0.15);
         color: #f44336;
       }
       .tags-container {
@@ -321,7 +341,7 @@ import { NicknameService } from '../services/nickname.service';
         gap: 20px;
       }
       .from-address {
-        color: #666;
+        color: var(--text-secondary);
         font-size: 0.9em;
         margin-right: 4px;
       }
@@ -329,25 +349,26 @@ import { NicknameService } from '../services/nickname.service';
         padding: 0.5rem 1rem;
         font-size: 1.5rem;
         background: transparent;
-        border: 2px solid #764ba2;
-        border-radius: 8px;
+        border: 2px solid var(--accent-color);
+        border-radius: var(--border-radius-sm);
         cursor: pointer;
-        transition: all 0.3s ease;
-        color: #764ba2;
+        transition: all var(--transition-duration) ease;
+        color: var(--accent-color);
       }
 
       .favorite-button.is-favorite {
-        background: #764ba2;
+        background: var(--accent-gradient);
         color: white;
+        border-color: transparent;
       }
 
       .favorite-button:hover {
-        transform: scale(1.05);
-        box-shadow: 0 2px 8px rgba(118, 75, 162, 0.2);
+        transform: scale(1.1);
+        box-shadow: 0 4px 12px var(--accent-light);
       }
       .tag-count {
         font-size: 0.8em;
-        color: #666;
+        color: var(--text-tertiary);
         font-weight: normal;
         margin-left: 0.5rem;
       }
@@ -359,19 +380,25 @@ import { NicknameService } from '../services/nickname.service';
       }
 
       .nickname-input {
-        padding: 0.5rem;
+        padding: 0.75rem 1rem;
         font-size: 1.2rem;
-        border: 2px solid #eee;
-        border-radius: 8px;
-        transition: all 0.3s ease;
+        border: 2px solid var(--input-border);
+        border-radius: var(--border-radius-sm);
+        transition: all var(--transition-duration) ease;
         width: 100%;
         max-width: 300px;
+        background: var(--input-bg);
+        color: var(--text-primary);
       }
 
       .nickname-input:focus {
         outline: none;
-        border-color: #764ba2;
-        box-shadow: 0 2px 8px rgba(118, 75, 162, 0.1);
+        border-color: var(--input-border-focus);
+        box-shadow: 0 2px 8px var(--accent-light);
+      }
+
+      .nickname-input::placeholder {
+        color: var(--text-tertiary);
       }
 
       .remove-nickname {
@@ -379,14 +406,14 @@ import { NicknameService } from '../services/nickname.service';
         color: white;
         border: none;
         border-radius: 50%;
-        width: 24px;
-        height: 24px;
-        font-size: 1rem;
+        width: 28px;
+        height: 28px;
+        font-size: 1.2rem;
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: all 0.3s ease;
+        transition: all var(--transition-duration) ease;
       }
 
       .remove-nickname:hover {
@@ -396,47 +423,55 @@ import { NicknameService } from '../services/nickname.service';
 
       .edit-button {
         margin-left: 1rem;
-        padding: 4px 12px;
-        background: #764ba2;
+        padding: 6px 14px;
+        background: var(--accent-gradient);
         color: white;
         border: none;
-        border-radius: 4px;
+        border-radius: var(--border-radius-sm);
         cursor: pointer;
         font-size: 0.9rem;
+        transition: all var(--transition-duration) ease;
+        box-shadow: 0 2px 8px var(--accent-light);
       }
 
       .edit-button:hover {
-        background: #653991;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px var(--accent-light);
       }
 
       .external-links h4 {
-        margin: 0;
+        margin: 0 0 8px 0;
+        color: var(--text-primary);
       }
 
       .external-links {
-        margin-bottom: 15px;
+        margin-bottom: 20px;
       }
 
       .external-links a {
         display: inline-block;
-        color: #007bff;
+        color: var(--link-color);
         text-decoration: none;
         margin: 5px 15px 5px 0;
+        transition: color var(--transition-duration) ease;
       }
       .external-links a:hover {
+        color: var(--link-hover);
         text-decoration: underline;
       }
 
       .balances-section {
-        background: #f8f8f8;
+        background: var(--card-bg-secondary);
         padding: 20px;
-        border-radius: 8px;
+        border-radius: var(--border-radius-md);
         margin-bottom: 20px;
+        border: 1px solid var(--border-color-light);
       }
 
       .balances-section h3 {
         margin-top: 0;
         margin-bottom: 15px;
+        color: var(--text-primary);
       }
 
       .balances-grid {
@@ -446,23 +481,32 @@ import { NicknameService } from '../services/nickname.service';
       }
 
       .balance-item {
-        background: white;
+        background: var(--card-bg);
         padding: 12px;
-        border-radius: 6px;
+        border-radius: var(--border-radius-sm);
         display: flex;
         justify-content: space-between;
         align-items: center;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        box-shadow: var(--card-shadow);
+        border: 1px solid var(--border-color-light);
+        transition: all var(--transition-duration) ease;
+      }
+
+      .balance-item:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--card-shadow-hover);
+        border-color: var(--accent-color);
       }
 
       .asset-code {
-        font-weight: 500;
-        color: #333;
+        font-weight: 600;
+        color: var(--text-primary);
       }
 
       .balance-amount {
         font-family: monospace;
-        color: #007bff;
+        color: var(--accent-color);
+        font-weight: 500;
       }
     `,
   ],

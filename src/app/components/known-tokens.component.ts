@@ -26,25 +26,44 @@ import { AddressPipe } from '../pipes/address.pipe';
       .tokens-container {
         padding: 20px;
       }
+
+      h2 {
+        color: var(--text-primary);
+        margin-bottom: 1.5rem;
+      }
+
       .token-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 10px;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 12px;
       }
       .token-card {
-        padding: 10px;
-        background: #f5f5f5;
-        border-radius: 4px;
+        padding: 16px;
+        background: var(--card-bg);
+        border-radius: var(--border-radius-md);
         text-align: center;
         cursor: help;
+        transition: all var(--transition-duration) ease;
+        border: 1px solid var(--border-color-light);
+        box-shadow: var(--card-shadow);
       }
+
+      .token-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--card-shadow-hover);
+        border-color: var(--accent-color);
+      }
+
       .token-name {
-        font-weight: bold;
-        margin-bottom: 4px;
+        font-weight: 700;
+        margin-bottom: 6px;
+        color: var(--text-primary);
+        font-size: 1.1em;
       }
       .token-address {
         font-size: 0.9em;
-        color: #666;
+        color: var(--text-secondary);
+        font-family: monospace;
       }
     `,
     ]

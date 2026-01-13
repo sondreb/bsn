@@ -175,11 +175,13 @@ interface BSNData {
       }
       .websites a {
         display: block;
-        color: #007bff;
+        color: var(--link-color);
         text-decoration: none;
         margin: 5px 0;
+        transition: color var(--transition-duration) ease;
       }
       .websites a:hover {
+        color: var(--link-hover);
         text-decoration: underline;
       }
 
@@ -190,24 +192,31 @@ interface BSNData {
       .search-input {
         width: 100%;
         padding: 1rem;
-        border: 2px solid #eee;
-        border-radius: 12px;
+        border: 2px solid var(--input-border);
+        border-radius: var(--border-radius-md);
         font-size: 1rem;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        transition: all var(--transition-duration) ease;
+        box-shadow: var(--card-shadow);
+        background: var(--input-bg);
+        color: var(--text-primary);
       }
 
       .search-input:focus {
         outline: none;
-        border-color: #764ba2;
-        box-shadow: 0 4px 12px rgba(118, 75, 162, 0.15);
+        border-color: var(--input-border-focus);
+        box-shadow: 0 4px 16px var(--accent-light);
+      }
+
+      .search-input::placeholder {
+        color: var(--text-tertiary);
       }
 
       .filters {
-        background: #f8f9fa;
+        background: var(--card-bg-secondary);
         padding: 1.5rem;
-        border-radius: 12px;
+        border-radius: var(--border-radius-md);
         margin-bottom: 2rem;
+        border: 1px solid var(--border-color-light);
       }
 
       .filter-group {
@@ -222,7 +231,12 @@ interface BSNData {
         gap: 0.5rem;
         font-weight: 500;
         cursor: pointer;
-        transition: all 0.3s ease;
+        transition: all var(--transition-duration) ease;
+        color: var(--text-primary);
+      }
+
+      .filter-group label:hover {
+        color: var(--accent-color);
       }
 
       .favorites-filter {
@@ -236,16 +250,18 @@ interface BSNData {
       }
 
       .account-card {
-        background: white;
-        border-radius: 12px;
+        background: var(--card-bg);
+        border-radius: var(--border-radius-md);
         padding: 1.5rem;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        transition: all 0.3s ease;
+        box-shadow: var(--card-shadow);
+        transition: all var(--transition-duration) ease;
+        border: 1px solid var(--border-color-light);
       }
 
       .account-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+        transform: translateY(-4px);
+        box-shadow: var(--card-shadow-hover);
+        border-color: var(--accent-color);
       }
 
       .account-header {
@@ -255,7 +271,12 @@ interface BSNData {
         cursor: pointer;
         padding: 0.5rem;
         margin: -0.5rem;
-        border-radius: 8px;
+        border-radius: var(--border-radius-sm);
+        transition: background var(--transition-duration) ease;
+      }
+
+      .account-header:hover {
+        background: var(--hover-bg);
       }
 
       .header-content {
@@ -266,34 +287,35 @@ interface BSNData {
         padding: 0.5rem;
         font-size: 1.2rem;
         background: transparent;
-        border: 2px solid #764ba2;
-        border-radius: 8px;
+        border: 2px solid var(--accent-color);
+        border-radius: var(--border-radius-sm);
         cursor: pointer;
-        transition: all 0.3s ease;
-        color: #764ba2;
+        transition: all var(--transition-duration) ease;
+        color: var(--accent-color);
         margin-left: 1rem;
       }
 
       .favorite-button.is-favorite {
-        background: #764ba2;
+        background: var(--accent-gradient);
         color: white;
+        border-color: transparent;
       }
 
       .favorite-button:hover {
-        transform: scale(1.05);
-        box-shadow: 0 2px 8px rgba(118, 75, 162, 0.2);
+        transform: scale(1.1);
+        box-shadow: 0 4px 12px var(--accent-light);
       }
 
       .account-header h3 {
         margin: 0 0 0.5rem 0;
-        color: #333;
+        color: var(--text-primary);
         font-size: 1.2rem;
       }
 
       .address-display {
         font-family: 'Monaco', 'Consolas', monospace;
         font-size: 0.9rem;
-        color: #666;
+        color: var(--text-secondary);
       }
 
       .rating {
@@ -302,17 +324,18 @@ interface BSNData {
         padding: 4px 8px;
         border-radius: 12px;
         display: inline-block;
+        font-weight: 600;
       }
       .rating.high {
-        background: #4caf5022;
+        background: rgba(76, 175, 80, 0.15);
         color: #4caf50;
       }
       .rating.medium {
-        background: #ff980022;
+        background: rgba(255, 152, 0, 0.15);
         color: #ff9800;
       }
       .rating.low {
-        background: #f4433622;
+        background: rgba(244, 67, 54, 0.15);
         color: #f44336;
       }
 
@@ -324,25 +347,33 @@ interface BSNData {
       }
 
       .tag-value {
-        background: #f0f4ff;
+        background: var(--tag-bg);
         padding: 0.5rem 1rem;
         border-radius: 999px;
         font-size: 0.9rem;
         text-decoration: none;
-        color: #4a5568;
-        transition: all 0.3s ease;
+        color: var(--tag-text);
+        transition: all var(--transition-duration) ease;
+        border: 1px solid transparent;
       }
 
       .tag-value:hover {
-        background: #e2e8ff;
-        transform: translateY(-1px);
+        background: var(--tag-hover);
+        transform: translateY(-2px);
+        border-color: var(--accent-color);
+        box-shadow: 0 2px 8px var(--accent-light);
+      }
+
+      .tag-name {
+        opacity: 0.8;
+        margin-left: 0.25rem;
       }
 
       .about {
         margin: 1rem 0;
-        color: #666;
+        color: var(--text-secondary);
         font-size: 0.95rem;
-        line-height: 1.5;
+        line-height: 1.6;
       }
 
       @media (max-width: 768px) {
