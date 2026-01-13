@@ -67,68 +67,99 @@ interface VolunteerProgram {
       .volunteers-container {
         padding: 20px;
       }
+
+      h2 {
+        color: var(--text-primary);
+        margin-bottom: 1.5rem;
+      }
+
       .volunteer-list {
         display: flex;
         flex-direction: column;
-        gap: 10px;
+        gap: 12px;
       }
       .volunteer-item {
-        background: #f5f5f5;
-        border-radius: 4px;
+        background: var(--card-bg);
+        border-radius: var(--border-radius-md);
         overflow: hidden;
+        border: 1px solid var(--border-color-light);
+        box-shadow: var(--card-shadow);
+        transition: all var(--transition-duration) ease;
       }
+
+      .volunteer-item:hover {
+        box-shadow: var(--card-shadow-hover);
+        border-color: var(--accent-color);
+      }
+
       .program-header {
-        padding: 10px;
+        padding: 12px 16px;
         display: flex;
         justify-content: space-between;
         align-items: center;
         cursor: pointer;
         user-select: none;
-        transition: background-color 0.2s;
+        transition: all var(--transition-duration) ease;
+        background: var(--card-bg-secondary);
       }
       .program-header:hover {
-        background: #e8e8e8;
+        background: var(--hover-bg);
       }
       .program-info {
         display: flex;
         gap: 8px;
         align-items: center;
+        flex-wrap: wrap;
       }
+
+      .address {
+        color: var(--text-primary);
+        font-family: monospace;
+      }
+
       .name {
-        color: #666;
+        color: var(--text-secondary);
+        font-size: 0.9em;
       }
       .count {
-        color: #007bff;
+        color: var(--accent-color);
+        font-weight: 600;
       }
       .expand-icon {
-        color: #666;
-        font-size: 0.8em;
+        color: var(--text-secondary);
+        font-size: 0.9em;
+        transition: transform var(--transition-duration) ease;
       }
       .volunteers-detail {
-        padding: 10px;
-        background: white;
-        border-top: 1px solid #eee;
+        padding: 12px 16px;
+        background: var(--card-bg);
+        border-top: 1px solid var(--border-color-light);
       }
       .volunteer-entry {
         padding: 6px 10px;
         display: flex;
         gap: 8px;
         align-items: center;
+        border-radius: var(--border-radius-sm);
+        transition: background var(--transition-duration) ease;
       }
       .volunteer-entry:hover {
-        background: #f8f8f8;
+        background: var(--hover-bg);
       }
       .volunteer-link {
         text-decoration: none;
-        color: inherit;
+        color: var(--text-primary);
         display: flex;
         gap: 8px;
         align-items: center;
         padding: 6px 10px;
+        border-radius: var(--border-radius-sm);
+        transition: all var(--transition-duration) ease;
+        width: 100%;
       }
       .volunteer-link:hover {
-        background: #f0f0f0;
-        border-radius: 4px;
+        background: var(--hover-bg);
+        transform: translateX(4px);
       }
     `,
     ]

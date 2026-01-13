@@ -77,6 +77,7 @@ import { FavoritesService } from '../services/favorites.service';
         justify-content: space-between;
         align-items: center;
         margin-bottom: 20px;
+        color: var(--text-primary);
       }
 
       .sort-controls {
@@ -86,10 +87,20 @@ import { FavoritesService } from '../services/favorites.service';
       }
 
       select {
-        padding: 8px;
-        border-radius: 4px;
-        border: 1px solid #ddd;
+        padding: 0.75rem 1rem;
+        border-radius: var(--border-radius-sm);
+        border: 2px solid var(--input-border);
         font-size: 1rem;
+        background: var(--input-bg);
+        color: var(--text-primary);
+        cursor: pointer;
+        transition: all var(--transition-duration) ease;
+      }
+
+      select:focus {
+        outline: none;
+        border-color: var(--input-border-focus);
+        box-shadow: 0 2px 8px var(--accent-light);
       }
 
       .accounts-grid {
@@ -100,29 +111,38 @@ import { FavoritesService } from '../services/favorites.service';
 
       .account-card {
         position: relative;
-        background: white;
-        border-radius: 8px;
+        background: var(--card-bg);
+        border-radius: var(--border-radius-md);
         padding: 15px;
         padding-top: 30px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        box-shadow: var(--card-shadow);
+        border: 1px solid var(--border-color-light);
+        transition: all var(--transition-duration) ease;
+      }
+
+      .account-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--card-shadow-hover);
+        border-color: var(--accent-color);
       }
 
       .rank-indicator {
         position: absolute;
         top: -10px;
         left: 15px;
-        background: #764ba2;
+        background: var(--accent-gradient);
         color: white;
-        padding: 2px 8px;
-        border-radius: 12px;
+        padding: 4px 12px;
+        border-radius: 16px;
         font-size: 0.8em;
         font-weight: bold;
+        box-shadow: 0 2px 8px var(--accent-light);
       }
 
       .account-header {
         margin-bottom: 15px;
         padding-bottom: 10px;
-        border-bottom: 1px solid #eee;
+        border-bottom: 1px solid var(--border-color-light);
       }
 
       .account-link {
@@ -132,13 +152,19 @@ import { FavoritesService } from '../services/favorites.service';
 
       .account-link h3 {
         margin: 0 0 5px 0;
-        color: #764ba2;
+        color: var(--accent-color);
+        transition: color var(--transition-duration) ease;
+      }
+
+      .account-link:hover h3 {
+        color: var(--accent-color);
+        opacity: 0.8;
       }
 
       .address {
         font-family: monospace;
         font-size: 0.9em;
-        color: #666;
+        color: var(--text-secondary);
       }
 
       .balances-grid {
@@ -148,44 +174,47 @@ import { FavoritesService } from '../services/favorites.service';
       }
 
       .balance-item {
-        background: #f5f5f5;
-        padding: 8px;
-        border-radius: 4px;
+        background: var(--card-bg-tertiary);
+        padding: 10px;
+        border-radius: var(--border-radius-sm);
         display: flex;
         flex-direction: column;
         align-items: center;
         gap: 4px;
-        transition: all 0.3s ease;
+        transition: all var(--transition-duration) ease;
+        border: 1px solid var(--border-color-light);
       }
 
       .balance-item.highlighted {
-        background: #764ba222;
-        border: 1px solid #764ba244;
+        background: var(--accent-light);
+        border: 2px solid var(--accent-color);
         transform: scale(1.05);
-        box-shadow: 0 2px 8px rgba(118, 75, 162, 0.1);
+        box-shadow: 0 4px 12px var(--accent-light);
       }
 
       .balance-item.highlighted .token {
-        color: #764ba2;
-        font-weight: 600;
+        color: var(--accent-color);
+        font-weight: 700;
       }
 
       .balance-item.highlighted .amount {
-        color: #764ba2;
-        font-weight: 600;
+        color: var(--accent-color);
+        font-weight: 700;
       }
 
       .token {
         font-size: 0.8em;
-        color: #666;
-      }
-
-      .amount {
+        color: var(--text-secondary);
         font-weight: 500;
       }
 
+      .amount {
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+
       .amount.highlighted {
-        color: #764ba2;
+        color: var(--accent-color);
         font-weight: 600;
       }
 
@@ -195,6 +224,11 @@ import { FavoritesService } from '../services/favorites.service';
         align-items: center;
         gap: 0.5rem;
         cursor: pointer;
+        color: var(--text-primary);
+      }
+
+      .favorites-filter:hover {
+        color: var(--accent-color);
       }
     `,
   ],

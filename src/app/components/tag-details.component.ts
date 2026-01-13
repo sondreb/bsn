@@ -46,6 +46,12 @@ import { RouterLink } from '@angular/router';
         max-width: 1200px;
         margin: 0 auto;
       }
+
+      h2 {
+        color: var(--text-primary);
+        margin-bottom: 1.5rem;
+      }
+
       .columns {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -53,30 +59,45 @@ import { RouterLink } from '@angular/router';
         margin-top: 20px;
       }
       .column {
-        background: #f5f5f5;
+        background: var(--card-bg-secondary);
         padding: 20px;
-        border-radius: 8px;
+        border-radius: var(--border-radius-md);
+        border: 1px solid var(--border-color-light);
+        box-shadow: var(--card-shadow);
       }
       .address-link {
         display: block;
-        padding: 8px;
+        padding: 10px 12px;
         text-decoration: none;
-        color: inherit;
-        border-radius: 4px;
+        color: var(--text-primary);
+        border-radius: var(--border-radius-sm);
         margin: 4px 0;
-        transition: background-color 0.2s;
+        transition: all var(--transition-duration) ease;
+        border: 1px solid transparent;
       }
       .address-link:hover {
-        background: #e0e0e0;
+        background: var(--hover-bg);
+        border-color: var(--accent-color);
+        transform: translateX(4px);
+        box-shadow: 0 2px 8px var(--accent-light);
       }
       .name {
-        color: #666;
+        color: var(--text-secondary);
         margin-left: 8px;
+        font-size: 0.9em;
       }
       h3 {
         margin-top: 0;
         padding-bottom: 10px;
-        border-bottom: 1px solid #ddd;
+        border-bottom: 2px solid var(--border-color);
+        color: var(--text-primary);
+      }
+
+      @media (max-width: 768px) {
+        .columns {
+          grid-template-columns: 1fr;
+          gap: 20px;
+        }
       }
     `,
     ]

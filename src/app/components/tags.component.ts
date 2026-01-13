@@ -28,30 +28,42 @@ interface TagStats {
     .tags-container {
       padding: 20px;
     }
+
+    h2 {
+      color: var(--text-primary);
+      margin-bottom: 1.5rem;
+    }
+
     .tags-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
       gap: 20px;
     }
     .tag-card {
-      background: #f5f5f5;
-      padding: 15px;
-      border-radius: 8px;
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: var(--border-radius-md);
       text-align: center;
       text-decoration: none;
       color: inherit;
       cursor: pointer;
+      transition: all var(--transition-duration) ease;
+      border: 1px solid var(--border-color-light);
+      box-shadow: var(--card-shadow);
     }
     .tag-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      transform: translateY(-4px);
+      box-shadow: var(--card-shadow-hover);
+      border-color: var(--accent-color);
     }
     .tag-name {
-      font-weight: bold;
+      font-weight: 700;
       margin-bottom: 8px;
+      color: var(--text-primary);
+      font-size: 1.1em;
     }
     .tag-count {
-      color: #666;
+      color: var(--text-secondary);
       font-size: 0.9em;
     }
   `]
