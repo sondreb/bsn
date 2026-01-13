@@ -7,6 +7,7 @@ import { TagsComponent } from './components/tags.component';
 import { TagDetailsComponent } from './components/tag-details.component';
 import { ProfileEditComponent } from './components/profile-edit.component';
 import { BalancesComponent } from './components/balances.component';
+import { RelationshipsExplorerComponent } from './components/relationships-explorer.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'accounts', pathMatch: 'full' },
@@ -18,4 +19,6 @@ export const routes: Routes = [
   { path: 'tags/:name', component: TagDetailsComponent },
   { path: 'accounts/:address/edit', component: ProfileEditComponent },
   { path: 'balances', component: BalancesComponent },
+  { path: 'relationships', component: RelationshipsExplorerComponent },
 ];
+

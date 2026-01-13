@@ -60,6 +60,7 @@ import { ThemeService } from './services/theme.service';
         <a routerLink="/tokens" routerLinkActive="active">Known Tokens</a>
         <a routerLink="/volunteers" routerLinkActive="active">Volunteers</a>
         <a routerLink="/tags" routerLinkActive="active">Tags</a>
+        <a routerLink="/relationships" routerLinkActive="active">🌐 Relationships</a>
       </nav>
 
       <main>

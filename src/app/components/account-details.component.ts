@@ -8,6 +8,7 @@ import { RatingService } from '../services/rating.service';
 import { FavoritesService } from '../services/favorites.service';
 import { FormsModule } from '@angular/forms';
 import { NicknameService } from '../services/nickname.service';
+import { MeService } from '../services/me.service';
 
 @Component({
   selector: 'app-account-details',
@@ -58,6 +59,13 @@ import { NicknameService } from '../services/nickname.service';
             >
               Edit Profile
             </button>
+            <button
+              class="me-button"
+              [class.is-me]="isMe()"
+              (click)="toggleMe()"
+            >
+              {{ isMe() ? '✓ This is me' : 'This is me' }}
+            </button>
           </div>
         </div>
         <button
@@ -99,6 +107,43 @@ import { NicknameService } from '../services/nickname.service';
           >Scopuly</a
         >
       </div>
+
+      @if (getMeAccount() && getMeAccount() !== address) {
+      <section class="relationships-section">
+        <h3>Relationships with my account</h3>
+        <div class="relationships-container">
+          @if (getRelationshipsToMe().length > 0) {
+          <div class="relationship-group">
+            <h4>Their tags for me</h4>
+            <div class="tag-values">
+              @for (rel of getRelationshipsToMe(); track rel.type) {
+              <span class="tag-value relationship-tag">
+                {{ rel.type }}
+              </span>
+              }
+            </div>
+          </div>
+          } @else {
+          <p class="no-relationships">No tags from them to me</p>
+          }
+          
+          @if (getRelationshipsFromMe().length > 0) {
+          <div class="relationship-group">
+            <h4>My tags for them</h4>
+            <div class="tag-values">
+              @for (rel of getRelationshipsFromMe(); track rel.type) {
+              <span class="tag-value relationship-tag">
+                {{ rel.type }}
+              </span>
+              }
+            </div>
+          </div>
+          } @else {
+          <p class="no-relationships">No tags from me to them</p>
+          }
+        </div>
+      </section>
+      }
 
       @if (account.balances) {
       <section class="balances-section">
@@ -439,6 +484,29 @@ import { NicknameService } from '../services/nickname.service';
         box-shadow: 0 4px 12px var(--accent-light);
       }
 
+      .me-button {
+        margin-left: 1rem;
+        padding: 6px 14px;
+        background: transparent;
+        color: var(--accent-color);
+        border: 2px solid var(--accent-color);
+        border-radius: var(--border-radius-sm);
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: all var(--transition-duration) ease;
+      }
+
+      .me-button.is-me {
+        background: var(--accent-gradient);
+        color: white;
+        border-color: transparent;
+      }
+
+      .me-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px var(--accent-light);
+      }
+
       .external-links h4 {
         margin: 0 0 8px 0;
         color: var(--text-primary);
@@ -508,6 +576,51 @@ import { NicknameService } from '../services/nickname.service';
         color: var(--accent-color);
         font-weight: 500;
       }
+
+      .relationships-section {
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
+        padding: 20px;
+        border-radius: var(--border-radius-md);
+        margin-bottom: 20px;
+        border: 2px solid var(--accent-color);
+      }
+
+      .relationships-section h3 {
+        margin-top: 0;
+        margin-bottom: 15px;
+        color: var(--text-primary);
+      }
+
+      .relationships-container {
+        display: grid;
+        gap: 15px;
+      }
+
+      .relationship-group {
+        background: var(--card-bg);
+        padding: 15px;
+        border-radius: var(--border-radius-sm);
+        border: 1px solid var(--border-color-light);
+      }
+
+      .relationship-group h4 {
+        margin-top: 0;
+        margin-bottom: 10px;
+        color: var(--accent-color);
+        font-size: 0.95em;
+      }
+
+      .relationship-tag {
+        background: var(--accent-gradient);
+        color: white;
+        border: none;
+      }
+
+      .no-relationships {
+        color: var(--text-tertiary);
+        font-style: italic;
+        margin: 0;
+      }
     `,
   ],
 })
@@ -517,6 +630,7 @@ export class AccountDetailsComponent implements OnInit {
   private ratingService = inject(RatingService);
   private favoritesService = inject(FavoritesService);
   private nicknameService = inject(NicknameService);
+  private meService = inject(MeService);
 
   address = '';
   account: any = null;
@@ -636,5 +750,52 @@ export class AccountDetailsComponent implements OnInit {
     } catch (err) {
       console.error('Failed to copy text: ', err);
     }
+  }
+
+  toggleMe() {
+    if (this.isMe()) {
+      this.meService.clearMeAccount();
+    } else {
+      this.meService.setMeAccount(this.address);
+    }
+  }
+
+  isMe(): boolean {
+    return this.meService.isMe(this.address);
+  }
+
+  getMeAccount(): string | null {
+    return this.meService.meAccount();
+  }
+
+  getRelationshipsToMe(): Array<{ type: string; values: string[] }> {
+    const meAccount = this.meService.meAccount();
+    if (!meAccount || !this.account?.tags) return [];
+
+    const relationships: Array<{ type: string; values: string[] }> = [];
+    
+    for (const [tagType, values] of Object.entries(this.account.tags)) {
+      if (Array.isArray(values) && values.includes(meAccount)) {
+        relationships.push({ type: tagType, values });
+      }
+    }
+
+    return relationships.sort((a, b) => a.type.localeCompare(b.type));
+  }
+
+  getRelationshipsFromMe(): Array<{ type: string; values: string[] }> {
+    const meAccount = this.meService.meAccount();
+    if (!meAccount || !this.accounts[meAccount]?.tags) return [];
+
+    const relationships: Array<{ type: string; values: string[] }> = [];
+    const myAccount = this.accounts[meAccount];
+
+    for (const [tagType, values] of Object.entries(myAccount.tags)) {
+      if (Array.isArray(values) && values.includes(this.address)) {
+        relationships.push({ type: tagType, values });
+      }
+    }
+
+    return relationships.sort((a, b) => a.type.localeCompare(b.type));
   }
 }
